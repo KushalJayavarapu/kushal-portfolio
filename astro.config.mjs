@@ -10,8 +10,8 @@ const font = (/** @type {string} */ file) => `./src/assets/fonts/${file}`;
 
 // The production origin. Canonical URLs, Open Graph URLs, JSON-LD, the sitemap and
 // robots.txt all derive from this one value (via `Astro.site`).
-// TODO(T6): the custom domain is undecided; this is the expected Cloudflare
-// default hostname. Change it here once the domain is chosen.
+// Hosted on Cloudflare Pages (see README "Deploy"). This must match the Pages
+// project's production hostname; change it here if a custom domain is added.
 const SITE_URL = 'https://kushal-portfolio.pages.dev';
 
 export default defineConfig({
