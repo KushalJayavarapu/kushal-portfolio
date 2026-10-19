@@ -1,26 +1,22 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Highlight from '../components/Highlight.astro';
 import Button from '../components/Button.astro';
 import Card from '../components/Card.astro';
 import Tag from '../components/Tag.astro';
 import EmailReveal from '../components/EmailReveal.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import PostCard from '../components/writing/PostCard.astro';
+import { getProjects } from '../lib/projects';
+import { getPosts } from '../lib/blog';
 import { SITE, SOCIAL } from '../config/site';
 
 // Every line of copy here traces to docs/content-brief.md.
 
 // Featured projects and latest writing come from the collections T3 and T4 fill.
 // Each section stays hidden until it has at least one published entry.
-const featured = (await getCollection('projects', ({ data }) => data.featured && !data.draft))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 4);
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
-
-const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' });
+const featured = (await getProjects()).filter(({ data }) => data.featured).slice(0, 4);
+const posts = (await getPosts()).slice(0, 3);
 
 // Motion catalogue #4 (typing line) is added in the motion pass (T5b). Until then,
 // and under reduced motion afterwards, the first approved phrase shows as static text.
@@ -45,7 +41,7 @@ const facts = [
       <p class="hero__lede rise" style="--i: 3">{SITE.description}</p>
       <div class="actions rise" style="--i: 4">
         <Button href="/projects/">See my projects</Button>
-        <Button href="#contact" variant="secondary">Get in touch</Button>
+        <Button href="/contact/" variant="secondary">Get in touch</Button>
       </div>
     </div>
 
@@ -78,19 +74,7 @@ const facts = [
         <ul class="grid" role="list">
           {featured.map((project) => (
             <li>
-              <Card href={`/projects/${project.id}/`} class="project">
-                <h3>{project.data.title}</h3>
-                <p>{project.data.summary}</p>
-                {project.data.stack.length > 0 && (
-                  <ul class="tags" aria-label="Stack">
-                    {project.data.stack.slice(0, 4).map((item) => (
-                      <li>
-                        <Tag>{item}</Tag>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </Card>
+              <ProjectCard project={project} />
             </li>
           ))}
         </ul>
@@ -121,17 +105,7 @@ const facts = [
     </header>
     <ul class="grid" role="list">
       {
-        posts.map((post) => (
-          <li>
-            <Card href={`/writing/${post.id}/`} class="post">
-              <time class="mono" datetime={post.data.pubDate.toISOString()}>
-                {dateFormat.format(post.data.pubDate)}
-              </time>
-              <h3>{post.data.title}</h3>
-              <p>{post.data.description}</p>
-            </Card>
-          </li>
-        ))
+        posts.map((post) => <PostCard post={post} />)
       }
       <li>
         <Card href={SOCIAL.linkedin} tone="yellow" class="post">
@@ -263,30 +237,11 @@ const facts = [
     display: grid;
   }
 
-  .grid :global(.project),
   .grid :global(.post) {
     display: grid;
     align-content: start;
     justify-items: start;
     gap: var(--space-3);
-  }
-
-  .grid time,
-  .grid :global(.post) > .mono {
-    color: var(--color-ink-soft);
-  }
-
-  .grid :global(.card--yellow) > .mono {
-    color: var(--color-ink);
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    padding: 0;
-    margin-top: var(--space-2);
-    list-style: none;
   }
 
   /* ---- About teaser ---- */

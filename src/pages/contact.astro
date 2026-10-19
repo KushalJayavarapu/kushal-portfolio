@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Highlight from '../components/Highlight.astro';
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import Tag from '../components/Tag.astro';
+import EmailReveal from '../components/EmailReveal.astro';
+import { SOCIAL } from '../config/site';
+
+// Facts from docs/content-brief.md. The email never appears in the HTML source:
+// EmailReveal decodes it on click. No phone number, by the brief's rules.
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch with Kushal Jayavarapu by email, LinkedIn or GitHub."
+>
+  <section class="container contact" aria-labelledby="contact-title">
+    <Tag>Contact</Tag>
+    <h1 id="contact-title">Get in <Highlight>touch</Highlight></h1>
+    <p class="contact__lede">
+      I'm aiming for forward-deployed engineering roles, with a side interest in finance and data
+      analytics. I'm based in Bengaluru, India.
+    </p>
+
+    <ul class="channels" role="list">
+      <li>
+        <Card tone="blue" class="channel">
+          <span class="mono">Email</span>
+          <h2>Write to me</h2>
+          <EmailReveal variant="accent" />
+        </Card>
+      </li>
+      <li>
+        <Card class="channel">
+          <span class="mono">LinkedIn</span>
+          <h2>Connect</h2>
+          <p>I also post The Footnote there, a weekly AI series, every Tuesday.</p>
+          <Button href={SOCIAL.linkedin} variant="secondary" rel="me">Open LinkedIn</Button>
+        </Card>
+      </li>
+      <li>
+        <Card class="channel">
+          <span class="mono">GitHub</span>
+          <h2>See the code</h2>
+          <Button href={SOCIAL.github} variant="secondary" rel="me">Open GitHub</Button>
+        </Card>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-8) 0;
+  }
+
+  .contact__lede {
+    font-size: var(--text-lg);
+  }
+
+  .channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-6);
+    width: 100%;
+    margin-top: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .channels > li {
+    display: grid;
+  }
+
+  .channels :global(.channel) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .channels h2 {
+    font-size: var(--text-xl);
+  }
+
+  .channels :global(.card--blue) h2 {
+    color: var(--color-white);
+  }
+</style>
