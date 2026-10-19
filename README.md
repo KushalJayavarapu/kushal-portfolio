@@ -6,7 +6,7 @@ Personal portfolio, projects and writing site. Built and maintained with Claude 
 **Design:** neo-brutalist (see `docs/design-reference.md`), animated per `docs/motion-spec.md`.
 
 ## Status
-Foundation (T1) is in: Astro scaffold, design tokens, self-hosted fonts, base components and a placeholder home page. Pages are built by later threads.
+Home, About, Projects, Writing (with RSS) and Contact pages are built, with SEO metadata and a sitemap. Deployed on Cloudflare Pages (see Deploy).
 
 ## Develop
 Requires Node >= 22.22.0 (`.nvmrc`).
@@ -20,7 +20,14 @@ npm run check    # astro check + TypeScript
 ```
 
 ## Deploy
-Output is a plain static site in `dist/` (build command `npm run build`, output directory `dist`), so any static host works. Hosting is not decided yet (T6); set `site` in `astro.config.mjs` once the domain is known.
+Hosted on **Cloudflare Pages** with its GitHub integration, at https://kushal-portfolio.pages.dev.
+
+- Production: every push to `main` builds and deploys.
+- Previews: every PR gets its own `*.kushal-portfolio.pages.dev` URL, posted on the PR (preview URLs are served with `X-Robots-Tag: noindex`).
+- Build settings (set once in the Cloudflare dashboard): framework preset Astro, build command `npm run build`, output directory `dist`. Node comes from `.nvmrc`.
+- Response headers (security headers, long-lived caching for hashed `/_astro/*` files) live in `public/_headers`.
+- Analytics: Cloudflare Web Analytics, enabled on the Pages project (Metrics tab). It is cookieless and injected by Cloudflare, so there is no tracking code in this repo.
+- If the project ever gets a different hostname (for example a custom domain), update `SITE_URL` in `astro.config.mjs`: canonical URLs, Open Graph, JSON-LD, the sitemap, RSS and robots.txt all derive from it.
 
 ## Docs
 | File | Purpose |
