@@ -14,6 +14,7 @@ Node >= 22.22.0 (see `.nvmrc`).
 - `npm run build`: static build to `dist/`
 - `npm run preview`: serve the built `dist/` locally
 - `npm run check`: `astro check` (Astro diagnostics + TypeScript typecheck, including `src/content.config.ts`)
+- CI (`.github/workflows/ci.yml`) runs `npm ci`, `npm run check` and `npm run build` on every PR and on pushes to main.
 
 ## Where things live
 - Tokens: `src/styles/tokens.css` (colour, type, spacing, shadows, motion). Global base + press physics: `src/styles/global.css`.
