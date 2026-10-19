@@ -16,9 +16,13 @@ const { title, description, pubDate, updatedDate, tags, draft } = post.data;
 const { Content } = await render(post);
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  article={{ publishedTime: pubDate, modifiedTime: updatedDate, tags }}
+  noindex={draft}
+>
   <link slot="head" rel="alternate" type="application/rss+xml" href={WRITING.feedPath} />
-  {draft && <meta slot="head" name="robots" content="noindex" />}
 
   <article class="container post">
     <header class="post__header">

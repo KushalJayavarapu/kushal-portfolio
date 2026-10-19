@@ -15,11 +15,9 @@ const escape = (value: string) =>
     .replace(/'/g, '&apos;');
 
 export const GET: APIRoute = async ({ site }) => {
-  // TODO(T5): `site` is unset in astro.config.mjs until the domain is decided.
-  // Until then links fall back to root-relative paths, which most readers resolve
-  // against the feed URL; setting `site` makes them absolute.
-  if (!site) console.warn('[rss] `site` is not set in astro.config.mjs; feed links are relative.');
-  const url = (path: string) => (site ? new URL(path, site).href : path);
+  // `site` is always set in astro.config.mjs; the guard only keeps types honest.
+  if (!site) throw new Error('[rss] `site` must be set in astro.config.mjs');
+  const url = (path: string) => new URL(path, site).href;
 
   const posts = await getPosts({ includeDrafts: false });
 
@@ -54,7 +52,7 @@ export const GET: APIRoute = async ({ site }) => {
     `    <link>${url('/writing/')}</link>`,
     `    <description>${escape(WRITING.description)}</description>`,
     `    <language>${SITE.locale}</language>`,
-    site ? `    <atom:link href="${url(WRITING.feedPath)}" rel="self" type="application/rss+xml" />` : '',
+    `    <atom:link href="${url(WRITING.feedPath)}" rel="self" type="application/rss+xml" />`,
     lastBuild ? `    <lastBuildDate>${lastBuild.toUTCString()}</lastBuildDate>` : '',
     items,
     '  </channel>',
