@@ -1,82 +1,247 @@
 ---
-/**
- * Placeholder home page from the foundation thread (T1). It proves the tokens and
- * base components render; T2 replaces it with the real home page.
- */
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Highlight from '../components/Highlight.astro';
 import Button from '../components/Button.astro';
 import Card from '../components/Card.astro';
 import Tag from '../components/Tag.astro';
-import { SITE } from '../config/site';
+import EmailReveal from '../components/EmailReveal.astro';
+import { SITE, SOCIAL } from '../config/site';
+
+// Every line of copy here traces to docs/content-brief.md.
+
+// Featured projects and latest writing come from the collections T3 and T4 fill.
+// Each section stays hidden until it has at least one published entry.
+const featured = (await getCollection('projects', ({ data }) => data.featured && !data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' });
+
+// Motion catalogue #4 (typing line) is added in the motion pass (T5b). Until then,
+// and under reduced motion afterwards, the first approved phrase shows as static text.
+const typingPhrase = 'builds AI systems that hold up under change.';
+
+const facts = [
+  { label: 'Studying', value: 'B.Tech in Computer Science & Engineering, PES University (2024 - 2028)' },
+  { label: 'Research', value: 'AdaptBank, an evaluation framework for how LLM agents behave when their environment changes' },
+  { label: 'Writing', value: 'The Footnote, a weekly AI explainer series on LinkedIn' },
+  { label: 'Looking for', value: 'Forward-deployed engineering roles' },
+];
 ---
 
 <BaseLayout>
-  <section class="container hero">
-    <Tag>Bengaluru, India</Tag>
-    <h1>Kushal <Highlight>Jayavarapu</Highlight></h1>
-    <p class="hero__lede">{SITE.description}</p>
-    <div class="actions">
-      <Button href="/projects/">See my projects</Button>
-      <Button href="/contact/" variant="secondary">Get in touch</Button>
+  <section class="container hero" aria-labelledby="hero-title">
+    <div class="hero__copy">
+      <div class="rise" style="--i: 0"><Tag>Bengaluru, India</Tag></div>
+      <h1 id="hero-title" class="rise" style="--i: 1">
+        Kushal <Highlight>Jayavarapu</Highlight>
+      </h1>
+      <p class="hero__typing rise" style="--i: 2">Kushal {typingPhrase}</p>
+      <p class="hero__lede rise" style="--i: 3">{SITE.description}</p>
+      <div class="actions rise" style="--i: 4">
+        <Button href="/projects/">See my projects</Button>
+        <Button href="#contact" variant="secondary">Get in touch</Button>
+      </div>
+    </div>
+
+    <div class="rise" style="--i: 5">
+    <Card as="div" class="hero__facts">
+      <Tag tone="ink">At a glance</Tag>
+      <dl>
+        {
+          facts.map(({ label, value }) => (
+            <div>
+              <dt class="mono">{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </Card>
     </div>
   </section>
 
-  <section class="container kit" aria-labelledby="kit-title">
-    <Tag tone="yellow">Foundation preview</Tag>
-    <h2 id="kit-title">Component <Highlight>kit</Highlight></h2>
-    <p>
-      Placeholder page for the design system: tokens, type, cards, buttons and tags. The real home
-      page replaces it.
-    </p>
+  {
+    featured.length > 0 && (
+      <section class="container section" aria-labelledby="projects-title">
+        <header class="section__head">
+          <Tag tone="yellow">Selected work</Tag>
+          <h2 id="projects-title">
+            Featured <Highlight tone="ink">projects</Highlight>
+          </h2>
+        </header>
+        <ul class="grid" role="list">
+          {featured.map((project) => (
+            <li>
+              <Card href={`/projects/${project.id}/`} class="project">
+                <h3>{project.data.title}</h3>
+                <p>{project.data.summary}</p>
+                {project.data.stack.length > 0 && (
+                  <ul class="tags" aria-label="Stack">
+                    {project.data.stack.slice(0, 4).map((item) => (
+                      <li>
+                        <Tag>{item}</Tag>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            </li>
+          ))}
+        </ul>
+        <Button href="/projects/" variant="secondary">All projects</Button>
+      </section>
+    )
+  }
 
-    <div class="grid">
-      <Card>
-        <Tag tone="green">Static card</Tag>
-        <h3>Sharp corners</h3>
-        <p>A bordered card with a hard offset shadow and zero blur.</p>
-      </Card>
-      <Card href="#kit-title" tone="yellow">
-        <Tag tone="ink">Linked card</Tag>
-        <h3>Press physics</h3>
-        <p>Hover lifts it; pressing pushes it flat into the page.</p>
-      </Card>
-      <Card tone="blue">
-        <Tag tone="cream">Accent card</Tag>
-        <h3>On blue</h3>
-        <p>White text on the primary blue keeps AA contrast.</p>
-      </Card>
+  <section class="container section about" aria-labelledby="about-title">
+    <header class="section__head">
+      <Tag tone="green">About</Tag>
+      <h2 id="about-title">A bit <Highlight tone="ink">about me</Highlight></h2>
+    </header>
+    <div class="about__body">
+      <p>
+        I'm a Computer Science undergraduate at PES University in Bengaluru, building AI and data
+        products. I did summer research at PES University's Center for Cloud Computing and Big Data,
+        and I work on benchmarks for how LLM agents hold up when their environment changes.
+      </p>
+      <Button href="/about/" variant="secondary">More about me</Button>
     </div>
+  </section>
 
-    <div class="actions">
-      <Button>Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="accent">Accent</Button>
-    </div>
-
-    <ul class="tags" aria-label="Tag tones">
-      <li><Tag>Cream</Tag></li>
-      <li><Tag tone="ink">Ink</Tag></li>
-      <li><Tag tone="coral">Coral</Tag></li>
-      <li><Tag tone="yellow">Yellow</Tag></li>
-      <li><Tag tone="green">Green</Tag></li>
-      <li><Tag tone="blue">Blue</Tag></li>
-      <li><Tag tone="purple">Purple</Tag></li>
-      <li><Tag href="#kit-title">Linked tag</Tag></li>
+  <section class="container section" aria-labelledby="writing-title">
+    <header class="section__head">
+      <Tag tone="blue">Writing</Tag>
+      <h2 id="writing-title">Latest <Highlight tone="ink">writing</Highlight></h2>
+    </header>
+    <ul class="grid" role="list">
+      {
+        posts.map((post) => (
+          <li>
+            <Card href={`/writing/${post.id}/`} class="post">
+              <time class="mono" datetime={post.data.pubDate.toISOString()}>
+                {dateFormat.format(post.data.pubDate)}
+              </time>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+            </Card>
+          </li>
+        ))
+      }
+      <li>
+        <Card href={SOCIAL.linkedin} tone="yellow" class="post">
+          <span class="mono">Every Tuesday on LinkedIn</span>
+          <h3>The Footnote</h3>
+          <p>A weekly series that explains AI in plain words, with minimal jargon.</p>
+        </Card>
+      </li>
     </ul>
+  </section>
+
+  <section id="contact" class="container section" aria-labelledby="contact-title">
+    <Card as="div" tone="blue" class="cta">
+      <h2 id="contact-title">Get in touch</h2>
+      <p>
+        I'm aiming for forward-deployed engineering roles, with a side interest in finance and data
+        analytics.
+      </p>
+      <div class="actions">
+        <EmailReveal variant="accent" />
+        <Button href={SOCIAL.linkedin} variant="inverse" rel="me">LinkedIn</Button>
+        <Button href={SOCIAL.github} variant="inverse" rel="me">GitHub</Button>
+      </div>
+    </Card>
   </section>
 </BaseLayout>
 
 <style>
+  /* ---- Hero ---- */
   .hero {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  @media (min-width: 60rem) {
+    .hero {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+  }
+
+  .hero__copy {
     display: grid;
     justify-items: start;
     gap: var(--space-5);
-    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .hero__typing {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-strong);
+    color: var(--color-ink);
   }
 
   .hero__lede {
     font-size: var(--text-lg);
+  }
+
+  .hero :global(.hero__facts) {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+  }
+
+  .hero dl {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .hero dt {
+    color: var(--color-ink-soft);
+  }
+
+  .hero dd {
+    margin: 0;
+    font-weight: var(--font-weight-strong);
+    line-height: var(--leading-snug);
+  }
+
+  /*
+   * Motion catalogue #3, hero entrance. Lines rise into place with a stagger.
+   * Deliberately transform only, no opacity fade: the headline is the LCP element
+   * and must paint at full opacity on the first frame. Reduced motion zeroes the
+   * duration tokens, and the media query skips the animation entirely.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .rise {
+      animation: hero-rise var(--dur-hero) var(--ease-out) both;
+      animation-delay: calc(var(--i, 0) * var(--stagger));
+    }
+  }
+
+  @keyframes hero-rise {
+    from {
+      transform: translateY(16px);
+    }
+  }
+
+  /* ---- Shared section layout ---- */
+  .section {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-6);
+    padding-block: var(--space-8) 0;
+  }
+
+  .section__head {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
   }
 
   .actions {
@@ -85,34 +250,66 @@ import { SITE } from '../config/site';
     gap: var(--space-4);
   }
 
-  .kit {
-    display: grid;
-    justify-items: start;
-    gap: var(--space-5);
-    padding-block: var(--space-7);
-    border-top: var(--border);
-  }
-
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
     gap: var(--space-6);
     width: 100%;
-    margin-block: var(--space-3);
+    padding: 0;
+    list-style: none;
   }
 
-  .grid :global(.card) {
+  .grid > li {
+    display: grid;
+  }
+
+  .grid :global(.project),
+  .grid :global(.post) {
     display: grid;
     align-content: start;
     justify-items: start;
     gap: var(--space-3);
   }
 
+  .grid time,
+  .grid :global(.post) > .mono {
+    color: var(--color-ink-soft);
+  }
+
+  .grid :global(.card--yellow) > .mono {
+    color: var(--color-ink);
+  }
+
   .tags {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-2);
     padding: 0;
+    margin-top: var(--space-2);
     list-style: none;
+  }
+
+  /* ---- About teaser ---- */
+  .about__body {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+  }
+
+  .about__body p {
+    font-size: var(--text-lg);
+  }
+
+  /* ---- Contact banner ---- */
+  .section :global(.cta) {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+    width: 100%;
+    padding: var(--space-7) var(--space-6);
+  }
+
+  .cta h2 {
+    color: var(--color-white);
   }
 </style>
