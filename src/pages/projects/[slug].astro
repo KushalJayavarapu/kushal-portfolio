@@ -1,0 +1,278 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button.astro';
+import Card from '../../components/Card.astro';
+import Tag from '../../components/Tag.astro';
+import {
+  getProjects,
+  projectHref,
+  projectTitleTransition,
+  type Project,
+} from '../../lib/projects';
+
+export const getStaticPaths = (async () => {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  project: Project;
+  next: Project;
+}
+
+const { project, next } = Astro.props;
+const { Content } = await render(project);
+const { title, summary, context, period, team, role, status, result, stack, stackLabel, links, credits } =
+  project.data;
+
+const facts = [
+  { label: 'Context', value: context },
+  { label: 'When', value: period },
+  { label: 'Team', value: team },
+  { label: 'My role', value: role },
+  { label: 'Status', value: status },
+  { label: 'Result', value: result },
+].filter((fact): fact is { label: string; value: string } => Boolean(fact.value));
+---
+
+<BaseLayout title={title} description={summary}>
+  <article class="case">
+    <header class="container case__header">
+      <a class="case__back mono" href="/projects/">&larr; All projects</a>
+      <h1 transition:name={projectTitleTransition(project)}>{title}</h1>
+      <p class="case__lede">{summary}</p>
+      {
+        links.length > 0 && (
+          <div class="case__links">
+            {links.map((link, i) => (
+              <Button href={link.href} variant={i === 0 ? 'primary' : 'secondary'}>
+                {link.label}
+                <span aria-hidden="true">&nearr;</span>
+              </Button>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="container case__body">
+      <aside class="case__aside" aria-label="Project facts">
+        {
+          facts.length > 0 && (
+            <Card as="div" tone="surface" class="case__facts">
+              <dl>
+                {facts.map((fact) => (
+                  <div>
+                    <dt class="mono">{fact.label}</dt>
+                    <dd>{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Card>
+          )
+        }
+        {
+          stack.length > 0 && (
+            <section aria-labelledby="stack-title">
+              <h2 id="stack-title" class="case__aside-title mono">
+                {stackLabel}
+              </h2>
+              <ul class="case__tags">
+                {stack.map((item) => (
+                  <li>
+                    <Tag>{item}</Tag>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+        {
+          credits.length > 0 && (
+            <section aria-labelledby="credits-title">
+              <h2 id="credits-title" class="case__aside-title mono">
+                Credits
+              </h2>
+              <ul class="case__credits">
+                {credits.map((credit) => (
+                  <li>
+                    <strong>{credit.name}</strong>
+                    <span>{credit.role}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+      </aside>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+
+    {
+      next.id !== project.id && (
+        <nav class="container case__next" aria-label="Next project">
+          <a class="case__next-link press" href={projectHref(next)}>
+            <span class="mono">Next project</span>
+            <span class="case__next-title">{next.data.title} &rarr;</span>
+          </a>
+        </nav>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .case__header {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-7) var(--space-6);
+  }
+
+  .case__back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .case__lede {
+    font-size: var(--text-lg);
+  }
+
+  .case__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .case__body {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-6);
+    border-top: var(--border);
+  }
+
+  @media (min-width: 60rem) {
+    .case__body {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      align-items: start;
+    }
+
+    .case__aside {
+      grid-column: 2;
+      grid-row: 1;
+      position: sticky;
+      top: var(--space-5);
+    }
+  }
+
+  .case__aside {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .case__aside dl {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .case__aside dt {
+    color: var(--color-ink-muted);
+  }
+
+  .case__aside dd {
+    margin: 0;
+    color: var(--color-ink);
+    font-weight: var(--font-weight-strong);
+    line-height: var(--leading-snug);
+  }
+
+  .case__aside-title {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .case__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .case__credits {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .case__credits li {
+    display: grid;
+    line-height: var(--leading-snug);
+  }
+
+  .case__credits span {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .case__next {
+    padding-block: var(--space-6);
+  }
+
+  .case__next-link {
+    display: grid;
+    gap: var(--space-2);
+    width: fit-content;
+    max-width: 100%;
+    padding: var(--space-5) var(--space-6);
+    border: var(--border);
+    background: var(--color-yellow);
+    text-decoration: none;
+  }
+
+  .case__next-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-display);
+  }
+
+  /* Case-study body: MDX output, so the elements carry no scope attribute. */
+  .prose {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--space-5);
+    font-size: var(--text-xl);
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.25em;
+    color: var(--color-ink-muted);
+  }
+
+  .prose :global(li::marker) {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+</style>

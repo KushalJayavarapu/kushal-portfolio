@@ -13,8 +13,21 @@ const projects = defineCollection({
     stack: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     order: z.number().default(100),
+    // Heading for the `stack` list; research projects list benchmark suites instead.
+    stackLabel: z.string().default('Stack'),
     links: z
       .array(z.object({ label: z.string(), href: z.url() }))
+      .default([]),
+    // Case-study facts. Each is optional: leave it out rather than guess.
+    context: z.string().optional(), // event or programme, e.g. "OpenAI Buildathon"
+    period: z.string().optional(),
+    team: z.string().optional(),
+    role: z.string().optional(),
+    status: z.string().optional(),
+    // Only an outcome the brief records and allows on the site.
+    result: z.string().optional(),
+    credits: z
+      .array(z.object({ name: z.string(), role: z.string() }))
       .default([]),
     draft: z.boolean().default(false),
   }),
