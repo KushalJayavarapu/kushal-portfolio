@@ -1,0 +1,47 @@
+---
+/** Row of linked tags for browsing posts by topic; `current` marks the open tag page. */
+import Tag from '../Tag.astro';
+import { tagHref } from '../../lib/blog';
+
+interface Props {
+  tags: { slug: string; tag: string; count: number }[];
+  current?: string;
+}
+
+const { tags, current } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <nav class="tag-filter" aria-label="Browse posts by tag">
+      <ul>
+        <li>
+          <Tag href="/writing/" tone={current ? 'cream' : 'ink'}>
+            All
+          </Tag>
+        </li>
+        {tags.map(({ slug, tag, count }) => (
+          <li>
+            <Tag href={tagHref(tag)} tone={slug === current ? 'ink' : 'cream'}>
+              {tag} <span class="tag-filter__count">({count})</span>
+            </Tag>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .tag-filter ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .tag-filter__count {
+    margin-left: 0.4em;
+  }
+</style>
