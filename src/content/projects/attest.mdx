@@ -1,0 +1,61 @@
+---
+title: ATTEST
+summary: Turns any written assignment into a short, adaptive oral defense. Instead of guessing whether AI wrote an essay, it asks whether the student can defend what they submitted.
+featured: true
+order: 1
+context: OpenAI Buildathon
+team: Team of 2, with Santosh Cheethirala
+role: Co-developer
+stack:
+  - Next.js 16 (App Router)
+  - TypeScript
+  - React
+  - Tailwind CSS
+  - GPT-5.6 (Responses API)
+  - OpenAI Realtime API (WebRTC)
+  - Web Speech API
+  - Neon serverless Postgres
+  - Vercel
+  - Vitest
+  - Playwright
+links:
+  - label: Live demo
+    href: https://attest-one.vercel.app
+  - label: Repo (Santosh's)
+    href: https://github.com/santoshcheethiralame-dot/ATTEST
+credits:
+  - name: Santosh Cheethirala
+    role: Co-developer and framework originator
+---
+
+## The problem
+
+Detecting whether AI wrote an essay is unreliable, and light paraphrasing defeats it. ATTEST asks a different question: can the student defend what they submitted?
+
+## How it works
+
+1. A lightweight editor logs every keystroke, pause and paste as an append-only event log.
+2. Replaying that log reconstructs how each part of the essay was written. This is computed deterministically, not inferred.
+3. GPT-5.6 reads the essay plus its provenance and finds the claim the writer is least able to defend.
+4. An examiner probes that claim in a live voice conversation over WebRTC, using the OpenAI Realtime API.
+5. If a gap appears, it switches to Socratic teaching until the student can defend the point, then checks again.
+
+Teachers get tooling too: it rewrites assignments to resist AI shortcuts, generates a defense rubric, and shows a class-level map of understanding.
+
+## What I built
+
+I co-developed ATTEST with Santosh, who originated the framework. It was my first time working with voice agents and the OpenAI APIs. My part covered:
+
+- Database persistence and API hardening, including rate limiting
+- Classroom and student management, and the teacher-student workflows
+- Seam caching
+- Playwright end-to-end tests
+
+## Technical highlights
+
+- A dependency-free token-bucket rate limiter.
+- One shared "examiner core" serving Realtime audio, browser speech and text through thin adapters.
+- Deterministic evidence (paste detection, revision counts) kept separate from the LLM's judgment.
+- A no-credentials demo mode with a deterministic examiner.
+- 60 unit tests in Vitest, plus Playwright end-to-end tests.
+- Debugging issues that only showed up live: a tool-schema field that the Responses API accepts but the Realtime API rejects was silently killing voice sessions.

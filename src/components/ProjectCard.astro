@@ -1,0 +1,89 @@
+---
+/**
+ * Project summary card for the Projects index (and the home page's featured row).
+ * The whole card links to the case study, so it carries no nested links.
+ */
+import Card from './Card.astro';
+import Tag from './Tag.astro';
+import { projectHref, projectTitleTransition, type Project } from '../lib/projects';
+
+interface Props {
+  project: Project;
+  tone?: 'surface' | 'cream' | 'yellow';
+  headingLevel?: 'h2' | 'h3';
+  /** How many stack tags to show before collapsing the rest into "+N". */
+  maxStack?: number;
+}
+
+const { project, tone = 'surface', headingLevel: Heading = 'h3', maxStack = 4 } = Astro.props;
+const { title, summary, context, stack, result, status } = project.data;
+const shown = stack.slice(0, maxStack);
+const hidden = stack.length - shown.length;
+---
+
+<Card href={projectHref(project)} tone={tone} class="project-card">
+  {context && <p class="project-card__context mono">{context}</p>}
+  <Heading class="project-card__title" transition:name={projectTitleTransition(project)}>
+    {title}
+  </Heading>
+  <p class="project-card__summary">{summary}</p>
+  {result && <Tag tone="green">{result}</Tag>}
+  {status && <Tag tone="yellow">{status}</Tag>}
+  {
+    shown.length > 0 && (
+      <ul class="project-card__stack" aria-label={`${title} ${project.data.stackLabel.toLowerCase()}`}>
+        {shown.map((item) => (
+          <li>
+            <Tag>{item}</Tag>
+          </li>
+        ))}
+        {hidden > 0 && (
+          <li>
+            <Tag tone="ink">
+              +{hidden}
+              <span class="visually-hidden"> more</span>
+            </Tag>
+          </li>
+        )}
+      </ul>
+    )
+  }
+  <span class="project-card__cta mono" aria-hidden="true">Read case study &rarr;</span>
+</Card>
+
+<style>
+  /* The root element is rendered (and scoped) by Card, so it needs :global; the
+     element selector outranks Card's own `display: block`. */
+  :global(a.card.project-card) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    height: 100%;
+  }
+
+  .project-card__context {
+    color: var(--color-ink-muted);
+  }
+
+  .project-card__title {
+    font-size: var(--text-xl);
+  }
+
+  .project-card__summary {
+    color: var(--color-ink-muted);
+  }
+
+  .project-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-card__cta {
+    margin-top: auto;
+    padding-top: var(--space-2);
+  }
+</style>

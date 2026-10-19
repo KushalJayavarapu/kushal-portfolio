@@ -1,0 +1,59 @@
+---
+title: AdaptBank
+summary: An evaluation framework for how LLM agents behave when their environment changes, so a developer choosing an agent can compare numbers and see which one will hold up.
+featured: true
+order: 2
+context: Summer research internship, CCBD, PES University
+period: Jun - Jul 2026
+role: Summer Research Intern
+status: Paper awaiting publication approval
+stackLabel: Drift suites
+stack:
+  - ToolMisuseBench
+  - OpenApps
+  - WebArena
+  - tau-bench
+credits:
+  - name: Nikhil Sai Madala
+    role: Teammate
+  - name: Brinda S
+    role: Teammate
+  - name: Manasa Bhaktha S
+    role: Teammate
+  - name: Priya Badrinath
+    role: Mentor
+  - name: Dr. Shylaja S S
+    role: Centre Director
+---
+
+{/* TODO: repo, leaderboard or paper link once Kushal is allowed to share one. */}
+
+## The problem
+
+Apps and websites update, and agents that used them break. AdaptBank measures how well an LLM agent holds up when its environment changes, so a developer choosing an agent can compare numbers instead of guessing.
+
+## The framework
+
+AdaptBank is a unified evaluation framework for the environmental robustness of AI agents. Its taxonomy covers four types of drift:
+
+- **Semantic drift**
+- **Interface drift**
+- **Workflow drift**
+- **Policy drift**
+
+Agents are scored on three metrics: Robustness Score, Recovery Performance Score and Context Adaptation Time.
+
+## What I did
+
+I worked on AdaptBank during a six-week summer research internship at PES University's Center for Cloud Computing and Big Data (CCBD).
+
+- Evaluated agent robustness under Semantic drift by running the ToolMisuseBench suite.
+- Computed all three metrics and benchmarked 6 agents, including 2 frontier models.
+- Contributed cross-agent scoring to a standardized Environmental Robustness Score, meant to power an agent leaderboard.
+- Extended coverage to further drift suites (OpenApps, WebArena and tau-bench) spanning Interface, Workflow and Policy drift.
+
+The biggest obstacle was API rate limits: getting through one benchmarking run took 10 to 15 API keys.
+
+## Where it stands
+
+The work is continuing informally with the team toward a research paper, which is awaiting publication approval.

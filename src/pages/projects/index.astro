@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Highlight from '../../components/Highlight.astro';
+import Tag from '../../components/Tag.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/projects';
+
+const projects = await getProjects();
+const featured = projects.filter((p) => p.data.featured);
+const more = projects.filter((p) => !p.data.featured);
+---
+
+<BaseLayout
+  title="Projects"
+  description="Research and hackathon projects by Kushal Jayavarapu, each with a short case study: the problem, what he built, and the stack."
+>
+  <section class="container intro">
+    <Tag tone="yellow">Projects</Tag>
+    <h1>Things I've <Highlight>built</Highlight>.</h1>
+    <p class="intro__lede">
+      Agent-robustness research and hackathon builds. Each one opens a short case study: the
+      problem, what I built, and the stack.
+    </p>
+  </section>
+
+  <section class="container group" aria-labelledby="featured-title">
+    <h2 id="featured-title" class="group__title mono">Featured</h2>
+    <ul class="grid">
+      {
+        featured.map((project) => (
+          <li>
+            <ProjectCard project={project} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  {
+    more.length > 0 && (
+      <section class="container group" aria-labelledby="more-title">
+        <h2 id="more-title" class="group__title mono">More projects</h2>
+        <ul class="grid">
+          {more.map((project) => (
+            <li>
+              <ProjectCard project={project} tone="cream" />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .intro {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .intro__lede {
+    font-size: var(--text-lg);
+  }
+
+  .group {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+  }
+
+  .group__title {
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+</style>
