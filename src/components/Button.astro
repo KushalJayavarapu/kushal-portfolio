@@ -1,0 +1,71 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+/**
+ * Pill button with press physics. Renders an <a> when `href` is set, otherwise a
+ * <button>. Variants: primary (blue), secondary (outlined), accent (yellow),
+ * inverse (outlined white, for dark/blue bands).
+ */
+type Variant = 'primary' | 'secondary' | 'accent' | 'inverse';
+
+type Props = {
+  variant?: Variant;
+  href?: string;
+} & Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, 'href'>;
+
+const { variant = 'primary', href, class: className, type, ...rest } = Astro.props;
+const classes = ['btn', `btn--${variant}`, 'press', 'mono', className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type ?? 'button'} class:list={classes} {...rest}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.75rem; /* 44px touch target */
+    padding: var(--space-3) var(--space-5);
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--_bg);
+    color: var(--_fg);
+  }
+
+  .btn--primary {
+    --_bg: var(--color-primary);
+    --_fg: var(--color-on-primary);
+  }
+
+  .btn--secondary {
+    --_bg: transparent;
+    --_fg: var(--color-ink);
+  }
+
+  .btn--accent {
+    --_bg: var(--color-yellow);
+    --_fg: var(--color-ink);
+  }
+
+  .btn--inverse {
+    --_bg: transparent;
+    --_fg: var(--color-white);
+    border-color: var(--color-white);
+  }
+</style>

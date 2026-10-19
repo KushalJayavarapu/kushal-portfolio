@@ -1,0 +1,118 @@
+---
+/**
+ * Placeholder home page from the foundation thread (T1). It proves the tokens and
+ * base components render; T2 replaces it with the real home page.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Highlight from '../components/Highlight.astro';
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import Tag from '../components/Tag.astro';
+import { SITE } from '../config/site';
+---
+
+<BaseLayout>
+  <section class="container hero">
+    <Tag>Bengaluru, India</Tag>
+    <h1>Kushal <Highlight>Jayavarapu</Highlight></h1>
+    <p class="hero__lede">{SITE.description}</p>
+    <div class="actions">
+      <Button href="/projects/">See my projects</Button>
+      <Button href="/contact/" variant="secondary">Get in touch</Button>
+    </div>
+  </section>
+
+  <section class="container kit" aria-labelledby="kit-title">
+    <Tag tone="yellow">Foundation preview</Tag>
+    <h2 id="kit-title">Component <Highlight>kit</Highlight></h2>
+    <p>
+      Placeholder page for the design system: tokens, type, cards, buttons and tags. The real home
+      page replaces it.
+    </p>
+
+    <div class="grid">
+      <Card>
+        <Tag tone="green">Static card</Tag>
+        <h3>Sharp corners</h3>
+        <p>A bordered card with a hard offset shadow and zero blur.</p>
+      </Card>
+      <Card href="#kit-title" tone="yellow">
+        <Tag tone="ink">Linked card</Tag>
+        <h3>Press physics</h3>
+        <p>Hover lifts it; pressing pushes it flat into the page.</p>
+      </Card>
+      <Card tone="blue">
+        <Tag tone="cream">Accent card</Tag>
+        <h3>On blue</h3>
+        <p>White text on the primary blue keeps AA contrast.</p>
+      </Card>
+    </div>
+
+    <div class="actions">
+      <Button>Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="accent">Accent</Button>
+    </div>
+
+    <ul class="tags" aria-label="Tag tones">
+      <li><Tag>Cream</Tag></li>
+      <li><Tag tone="ink">Ink</Tag></li>
+      <li><Tag tone="coral">Coral</Tag></li>
+      <li><Tag tone="yellow">Yellow</Tag></li>
+      <li><Tag tone="green">Green</Tag></li>
+      <li><Tag tone="blue">Blue</Tag></li>
+      <li><Tag tone="purple">Purple</Tag></li>
+      <li><Tag href="#kit-title">Linked tag</Tag></li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .hero__lede {
+    font-size: var(--text-lg);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .kit {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-7);
+    border-top: var(--border);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-6);
+    width: 100%;
+    margin-block: var(--space-3);
+  }
+
+  .grid :global(.card) {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-3);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+</style>

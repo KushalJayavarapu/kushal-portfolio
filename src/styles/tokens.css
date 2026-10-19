@@ -1,0 +1,111 @@
+/*
+ * Design tokens: the single source of colour, type, spacing, shadow and motion
+ * values. Components consume these variables; never hard-code hex values elsewhere.
+ * Adapted from docs/design-reference.md; motion values from docs/motion-spec.md.
+ *
+ * Font families (--font-display, --font-body, --font-mono) are defined by Astro's
+ * Fonts API (see astro.config.mjs) and emitted by <Font /> in BaseLayout.
+ */
+
+:root {
+  /* ---- Colour: base ---- */
+  --color-bg: #f5efe0; /* cream page background */
+  --color-surface: #fffaf0; /* raised card surface */
+  --color-ink: #1a1a1a; /* primary text, borders, shadows */
+  --color-ink-muted: #4a4a4a; /* body copy (7.7:1 on bg) */
+  --color-ink-soft: #6b6b6b; /* captions, meta only (4.6:1 on bg) */
+  --color-white: #ffffff;
+
+  /* ---- Colour: accents ----
+   * Contrast notes (WCAG AA):
+   *   white on coral is 3.1:1, so it is for large display text only (the <Highlight>).
+   *   ink on coral is 5.6:1 and is the choice for small text on coral.
+   *   white on blue 5.4:1, ink on yellow 10.2:1, ink on green 6.5:1, white on purple 5.7:1.
+   */
+  --color-coral: #ff5a3c;
+  --color-blue: #3355ff;
+  --color-yellow: #f0c040;
+  --color-green: #2fb36b;
+  --color-purple: #7c3aed;
+
+  /* Semantic aliases */
+  --color-primary: var(--color-blue);
+  --color-on-primary: var(--color-white);
+  --color-highlight: var(--color-coral);
+  --color-on-highlight: var(--color-white);
+  --color-focus: var(--color-blue);
+
+  /* ---- Typography ---- */
+  --font-weight-body: 400;
+  --font-weight-strong: 650;
+
+  --text-xs: 0.75rem; /* mono chrome */
+  --text-sm: 0.875rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --text-2xl: clamp(2rem, 1.5rem + 2.2vw, 3rem);
+  --text-display: clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem);
+
+  --leading-tight: 1.02;
+  --leading-snug: 1.2;
+  --leading-body: 1.65;
+
+  --tracking-display: -0.02em;
+  --tracking-mono: 0.08em;
+
+  /* ---- Spacing (4px base) ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  --container-max: 72rem;
+  --container-pad: clamp(1rem, 0.5rem + 2.5vw, 2rem);
+  --measure: 65ch;
+
+  /* ---- Borders, radii ---- */
+  --border-width: 3px;
+  --border-width-thin: 2px;
+  --border: var(--border-width) solid var(--color-ink);
+  --border-thin: var(--border-width-thin) solid var(--color-ink);
+  --radius-card: 0; /* sharp corners on cards: deliberate */
+  --radius-pill: 999px; /* pill buttons: deliberate contrast */
+
+  /* ---- Hard offset shadows (zero blur, always) ---- */
+  --shadow-offset-rest: 6px;
+  --shadow-offset-hover: 8px;
+  --shadow-sm: 3px 3px 0 0 var(--color-ink);
+  --shadow-rest: var(--shadow-offset-rest) var(--shadow-offset-rest) 0 0 var(--color-ink);
+  --shadow-hover: var(--shadow-offset-hover) var(--shadow-offset-hover) 0 0 var(--color-ink);
+  --shadow-pressed: 0 0 0 0 var(--color-ink);
+
+  /* ---- Motion (docs/motion-spec.md) ---- */
+  --dur-press: 90ms;
+  --dur-hover: 160ms;
+  --dur-reveal: 520ms;
+  --dur-hero: 700ms;
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --stagger: 60ms;
+
+  /* Press physics distances */
+  --lift: -2px;
+  --press: var(--shadow-offset-rest);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* Catalogue items 1 and 8 become instant state changes; everything else is off. */
+    --dur-press: 0ms;
+    --dur-hover: 0ms;
+    --dur-reveal: 0ms;
+    --dur-hero: 0ms;
+    --stagger: 0ms;
+  }
+}

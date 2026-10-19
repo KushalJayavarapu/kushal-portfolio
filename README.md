@@ -6,7 +6,21 @@ Personal portfolio, projects and writing site. Built and maintained with Claude 
 **Design:** neo-brutalist (see `docs/design-reference.md`), animated per `docs/motion-spec.md`.
 
 ## Status
-Scaffold only: docs and project config. The Astro app is created by the foundation thread (T1) in the Claude Code Project.
+Foundation (T1) is in: Astro scaffold, design tokens, self-hosted fonts, base components and a placeholder home page. Pages are built by later threads.
+
+## Develop
+Requires Node >= 22.22.0 (`.nvmrc`).
+
+```sh
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # static output in dist/
+npm run preview  # serve dist/ locally
+npm run check    # astro check + TypeScript
+```
+
+## Deploy
+Output is a plain static site in `dist/` (build command `npm run build`, output directory `dist`), so any static host works. Hosting is not decided yet (T6); set `site` in `astro.config.mjs` once the domain is known.
 
 ## Docs
 | File | Purpose |

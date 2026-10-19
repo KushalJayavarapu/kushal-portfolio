@@ -8,7 +8,18 @@ Personal portfolio site for Kushal Jayavarapu. Astro, static output, TypeScript.
 - `docs/content-brief.md`: the only source of facts for site copy. Never invent projects, metrics, awards or quotes; leave a `TODO` and flag it.
 
 ## Commands
-Defined by the foundation thread (T1). It must add and document: `npm run dev`, `npm run build`, `npm run check` (astro check + typecheck), and update this section.
+Node >= 22.22.0 (see `.nvmrc`).
+- `npm install`: install dependencies
+- `npm run dev`: dev server at http://localhost:4321
+- `npm run build`: static build to `dist/`
+- `npm run preview`: serve the built `dist/` locally
+- `npm run check`: `astro check` (Astro diagnostics + TypeScript typecheck, including `src/content.config.ts`)
+
+## Where things live
+- Tokens: `src/styles/tokens.css` (colour, type, spacing, shadows, motion). Global base + press physics: `src/styles/global.css`.
+- Fonts: `src/assets/fonts/` via Astro's Fonts API in `astro.config.mjs`.
+- Components: `src/components/` (`Highlight`, `Button`, `Card`, `Tag`, `Header`, `Footer`). Layout: `src/layouts/BaseLayout.astro`.
+- Site constants (nav, social links): `src/config/site.ts`. Collections: `src/content.config.ts`.
 
 ## Conventions
 - Content lives in Astro content collections (MDX): `src/content/projects`, `src/content/blog`.

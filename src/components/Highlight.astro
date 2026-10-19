@@ -1,0 +1,72 @@
+---
+/**
+ * The coral marker block behind a key word or phrase (design-reference motif).
+ * Motion catalogue #2: the block wipes in left to right with scaleX; the text is
+ * ink while the block is still arriving and flips to white once it has landed,
+ * so it is readable throughout. White on coral is 3.1:1, so use the default tone
+ * on large display text only; use tone="ink" anywhere smaller.
+ */
+interface Props {
+  tone?: 'white' | 'ink';
+  animate?: boolean;
+}
+
+const { tone = 'white', animate = true } = Astro.props;
+---
+
+<span class:list={['highlight', `highlight--${tone}`, { 'highlight--animate': animate }]}>
+  <slot />
+</span>
+
+<style>
+  .highlight {
+    position: relative;
+    isolation: isolate;
+    display: inline-block;
+    padding: 0 0.12em;
+    color: var(--_text);
+  }
+
+  .highlight--white {
+    --_text: var(--color-on-highlight);
+  }
+
+  .highlight--ink {
+    --_text: var(--color-ink);
+  }
+
+  .highlight::before {
+    content: '';
+    position: absolute;
+    inset: 0.04em 0 0.02em;
+    z-index: -1;
+    background: var(--color-highlight);
+    transform-origin: left center;
+  }
+
+  .highlight--animate::before {
+    animation: highlight-wipe var(--dur-hero) var(--ease-snap) both;
+  }
+
+  .highlight--animate.highlight--white {
+    animation: highlight-ink var(--dur-hero) step-end both;
+  }
+
+  @keyframes highlight-wipe {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes highlight-ink {
+    from {
+      color: var(--color-ink);
+    }
+    to {
+      color: var(--_text);
+    }
+  }
+</style>

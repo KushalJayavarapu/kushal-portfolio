@@ -1,0 +1,78 @@
+---
+/**
+ * Sharp-cornered, bordered card with a hard offset shadow. With `href` the whole
+ * card is one link and gets press physics; without it the card is static and
+ * keeps its resting shadow (it should not look pressable if it is not).
+ */
+type Tone = 'surface' | 'cream' | 'yellow' | 'blue' | 'coral';
+
+interface Props {
+  href?: string;
+  tone?: Tone;
+  as?: 'article' | 'div' | 'section' | 'li';
+  class?: string;
+}
+
+const { href, tone = 'surface', as: Tag = 'article', class: className } = Astro.props;
+const classes = ['card', `card--${tone}`, { 'card--link press': href }, className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes}>
+      <slot />
+    </a>
+  ) : (
+    <Tag class:list={classes}>
+      <slot />
+    </Tag>
+  )
+}
+
+<style>
+  .card {
+    display: block;
+    padding: var(--space-5);
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--_bg);
+    color: var(--_fg);
+    box-shadow: var(--_shadow, var(--shadow-rest));
+  }
+
+  .card--link {
+    text-decoration: none;
+  }
+
+  .card--surface {
+    --_bg: var(--color-surface);
+    --_fg: var(--color-ink);
+  }
+
+  .card--cream {
+    --_bg: var(--color-bg);
+    --_fg: var(--color-ink);
+  }
+
+  .card--yellow {
+    --_bg: var(--color-yellow);
+    --_fg: var(--color-ink);
+  }
+
+  .card--coral {
+    --_bg: var(--color-coral);
+    --_fg: var(--color-ink);
+  }
+
+  .card--blue {
+    --_bg: var(--color-blue);
+    --_fg: var(--color-white);
+  }
+
+  /* Body copy inside coloured cards inherits the card's foreground for contrast. */
+  .card--yellow :global(p),
+  .card--coral :global(p),
+  .card--blue :global(p) {
+    color: inherit;
+  }
+</style>
