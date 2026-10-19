@@ -1,0 +1,469 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Highlight from '../components/Highlight.astro';
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import Tag from '../components/Tag.astro';
+
+// Every fact on this page traces to docs/content-brief.md. Things the brief marks
+// as TODO (the cleaned résumé, the third certification) stay off the page.
+
+// TODO(Kushal): the résumé button stays hidden until a cleaned PDF (no phone, CGPA
+// or SRN) is committed as public/resume.pdf. Then set this to true.
+const hasResume = false;
+
+interface Role {
+  title: string;
+  org: string;
+  dates: string;
+  points: string[];
+}
+
+const experience: Role[] = [
+  {
+    title: 'Summer Research Intern',
+    org: 'Center for Cloud Computing and Big Data (CCBD), PES University',
+    dates: 'Jun 2026 - Jul 2026',
+    points: [
+      'Worked on AdaptBank, a unified evaluation framework for the environmental robustness of AI agents.',
+      'Evaluated agent robustness under Semantic Drift by running the ToolMisuseBench suite, one of four drift dimensions in the AdaptBank taxonomy.',
+      'Computed Robustness Score, Recovery Performance Score and Context Adaptation Time, benchmarking 6 agents (including 2 frontier models) across all three metrics.',
+      'Contributed cross-agent scoring to a standardized Environmental Robustness Score meant to power an agent leaderboard.',
+      'Extended coverage to further drift suites (OpenApps, WebArena, tau-bench) spanning Interface, Workflow and Policy drift.',
+    ],
+  },
+  {
+    title: 'Event Manager',
+    org: 'G Cube',
+    dates: 'Feb 2026 - present',
+    points: [
+      'Designed the format, schedule and map-selection framework for a campus Valorant tournament (40 teams) and led its promotion.',
+    ],
+  },
+  {
+    title: 'Core Member, leadership team',
+    org: 'Center for Information Security, Forensics and Cyber Resilience (ISFCR), PES University',
+    dates: 'Jan 2026 - present',
+    points: [
+      'Partners with the Club Head to coordinate cross-functional teams, allocate tasks, and lead member recruitment and onboarding.',
+    ],
+  },
+  {
+    title: 'Head of Content and Media',
+    org: 'ISFCR, PES University',
+    dates: 'Sep 2025 - Jan 2026',
+    points: [
+      "Directed content strategy and production, including Instagram reels, for CRYOVAULT, the club's flagship CTF (60 teams from across India).",
+      'Shot and edited live story coverage during the event.',
+    ],
+  },
+  {
+    title: 'Core Member',
+    org: 'ISFCR, PES University',
+    dates: 'Aug 2025 - Sep 2025',
+    points: [],
+  },
+  {
+    title: 'Computer Vision Trainee',
+    org: 'PESU I/O, PES University',
+    dates: 'Sep 2024 - Nov 2024',
+    points: [],
+  },
+];
+
+const achievements = [
+  {
+    title: 'Winner, AI Hackathon, IISc Bengaluru Workshop',
+    meta: 'Techgyan Technologies · 2025 · team of 4',
+    body: 'Built a machine-learning model to detect ambulance sirens, with applications in automated traffic management and emergency response.',
+  },
+  {
+    title: 'CIE Spark 2025: Top 13 of 77 teams',
+    meta: 'CIE, PES University · team of 4',
+    body: 'HustleHub: validated the "Golden Hour" response gap after road accidents through 60+ customer interviews, and proposed a sensor-based IoT accident detection and emergency alert system.',
+  },
+  {
+    title: 'Adobe hackathon: Top 9% of 3 lakh+ participants, coding round',
+    meta: 'Team of 3',
+    body: '',
+  },
+];
+
+const skills = [
+  { group: 'Languages', items: ['Python', 'TypeScript', 'C', 'C++', 'ARM Assembly'] },
+  {
+    group: 'AI and agent evaluation',
+    items: [
+      'Agent robustness evaluation',
+      'LLM benchmarking',
+      'Drift taxonomy analysis',
+      'Tool-schema design for LLM APIs',
+    ],
+  },
+  { group: 'Realtime and voice', items: ['OpenAI Realtime API (WebRTC)', 'Web Speech API'] },
+  {
+    group: 'Frameworks and libraries',
+    items: ['FastAPI', 'SQLAlchemy', 'Alembic', 'React', 'Next.js', 'Tailwind CSS'],
+  },
+  {
+    group: 'Tools and infrastructure',
+    items: [
+      'Git',
+      'Docker',
+      'PostgreSQL',
+      'Neon serverless Postgres',
+      'Vercel',
+      'Vitest',
+      'Playwright',
+      'Claude Code',
+      'Jira',
+      'Notion',
+      'ClickUp',
+    ],
+  },
+  {
+    group: 'Core CS',
+    items: [
+      'Data Structures & Algorithms',
+      'Operating Systems',
+      'Computer Networks',
+      'Software Engineering',
+    ],
+  },
+  {
+    group: 'Beyond code',
+    items: ['Project-management fundamentals', 'Computer vision basics', 'Customer discovery'],
+  },
+];
+
+const education = [
+  {
+    title: 'B.Tech in Computer Science & Engineering',
+    org: 'PES University',
+    dates: '2024 - 2028',
+    note: 'Relevant courses: DBMS, Machine Learning, Software Engineering, Data Analytics, Graph Theory.',
+  },
+  {
+    title: 'DSA & Full-Stack Development (CCBP 4.0)',
+    org: 'NxtWave x Woolf University',
+    dates: '2025 - 2027',
+    note: '',
+  },
+];
+
+const certifications = [
+  {
+    title: 'Google Project Management Professional Certificate',
+    meta: 'Google, via Coursera · Apr - Oct 2025',
+    body: '140-hour program covering Agile and Scrum, stakeholder communication, risk management, documentation and real-world project simulations.',
+  },
+  { title: 'Introduction to Programming Using Python', meta: '2024', body: '' },
+];
+
+const activities = [
+  'LLM Architecture & BERT Fine-Tuning Workshop, PES University (Encode.ai)',
+  'Engenious ’25 Ideathon, Enactus PES University: a 12-hour team ideation challenge',
+  'PeCon 2024, PES MUN Society: represented Lebanon',
+  'Diplomat Wars 5.0, PES MUN Society: quiz, debate and courtroom rounds',
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Kushal Jayavarapu is a Computer Science undergraduate at PES University in Bengaluru, building AI and data products."
+>
+  <section class="container intro" aria-labelledby="about-title">
+    <Tag>About</Tag>
+    <h1 id="about-title">About <Highlight>me</Highlight></h1>
+    <p class="intro__bio">
+      I'm a Computer Science undergraduate at PES University in Bengaluru, building AI and data
+      products. I did summer research at PES University's Center for Cloud Computing and Big Data,
+      and I work on benchmarks for how LLM agents hold up when their environment changes. Outside
+      coursework I build hackathon projects, lead club operations, and write a weekly AI explainer
+      series. I'm aiming for forward-deployed engineering roles, with a side interest in finance and
+      data analytics.
+    </p>
+    <div class="actions">
+      {hasResume && <Button href="/resume.pdf">Résumé (PDF)</Button>}
+      <Button href="/#contact" variant={hasResume ? 'secondary' : 'primary'}>Get in touch</Button>
+      <Button href="/projects/" variant="secondary">See my projects</Button>
+    </div>
+  </section>
+
+  <section class="container section" aria-labelledby="experience-title">
+    <header class="section__head">
+      <Tag tone="yellow">Experience</Tag>
+      <h2 id="experience-title">Where I've <Highlight tone="ink">worked</Highlight></h2>
+    </header>
+    <ol class="timeline" role="list">
+      {
+        experience.map((role) => (
+          <li class="timeline__item">
+            <p class="timeline__dates mono">{role.dates}</p>
+            <div class="timeline__body">
+              <h3>{role.title}</h3>
+              <p class="timeline__org">{role.org}</p>
+              {role.points.length > 0 && (
+                <ul class="points">
+                  {role.points.map((point) => (
+                    <li>{point}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="container section" aria-labelledby="results-title">
+    <header class="section__head">
+      <Tag tone="coral">Results</Tag>
+      <h2 id="results-title">Notable <Highlight tone="ink">results</Highlight></h2>
+    </header>
+    <ul class="grid" role="list">
+      {
+        achievements.map((item) => (
+          <li>
+            <Card class="stack">
+              <span class="mono meta">{item.meta}</span>
+              <h3>{item.title}</h3>
+              {item.body && <p>{item.body}</p>}
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="container section" aria-labelledby="skills-title">
+    <header class="section__head">
+      <Tag tone="green">Skills</Tag>
+      <h2 id="skills-title">What I <Highlight tone="ink">work with</Highlight></h2>
+    </header>
+    <ul class="grid" role="list">
+      {
+        skills.map(({ group, items }) => (
+          <li>
+            <Card class="stack">
+              <h3 class="skills__group">{group}</h3>
+              <ul class="tags" aria-label={group}>
+                {items.map((item) => (
+                  <li>
+                    <Tag>{item}</Tag>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="note">Spoken languages: English and Hindi (professional working proficiency).</p>
+  </section>
+
+  <section class="container section split" aria-labelledby="education-title">
+    <div class="split__col">
+      <header class="section__head">
+        <Tag tone="blue">Learning</Tag>
+        <h2 id="education-title">Education</h2>
+      </header>
+      <ul class="plain" role="list">
+        {
+          education.map((item) => (
+            <li>
+              <p class="mono meta">{item.dates}</p>
+              <h3>{item.title}</h3>
+              <p class="timeline__org">{item.org}</p>
+              {item.note && <p>{item.note}</p>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="split__col">
+      <header class="section__head">
+        <Tag tone="purple">Credentials</Tag>
+        <h2 id="certs-title">Certifications</h2>
+      </header>
+      <ul class="plain" role="list">
+        {
+          certifications.map((item) => (
+            <li>
+              <p class="mono meta">{item.meta}</p>
+              <h3>{item.title}</h3>
+              {item.body && <p>{item.body}</p>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="container section" aria-labelledby="activities-title">
+    <header class="section__head">
+      <Tag>Also</Tag>
+      <h2 id="activities-title">Workshops and activities</h2>
+    </header>
+    <ul class="points">
+      {activities.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-8) 0;
+  }
+
+  .intro__bio {
+    font-size: var(--text-lg);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .section {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-6);
+    padding-block: var(--space-8) 0;
+  }
+
+  .section__head {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
+  }
+
+  /* ---- Experience timeline ---- */
+  .timeline {
+    display: grid;
+    width: 100%;
+    padding: 0;
+    list-style: none;
+    border-top: var(--border);
+  }
+
+  .timeline__item {
+    display: grid;
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-5);
+    border-bottom: var(--border-thin);
+  }
+
+  @media (min-width: 48rem) {
+    .timeline__item {
+      grid-template-columns: 12rem minmax(0, 1fr);
+    }
+  }
+
+  .timeline__dates {
+    padding-top: 0.4em;
+    color: var(--color-ink-soft);
+  }
+
+  .timeline__body {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .timeline__body h3,
+  .plain h3 {
+    font-size: var(--text-lg);
+  }
+
+  .timeline__org {
+    color: var(--color-ink);
+    font-weight: var(--font-weight-strong);
+  }
+
+  .points {
+    display: grid;
+    gap: var(--space-2);
+    max-width: var(--measure);
+    padding-left: 1.25em;
+    color: var(--color-ink-muted);
+  }
+
+  .points li::marker {
+    color: var(--color-ink);
+  }
+
+  /* ---- Card grids ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-6);
+    width: 100%;
+    padding: 0;
+    list-style: none;
+  }
+
+  .grid > li {
+    display: grid;
+  }
+
+  .grid :global(.stack) {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-3);
+  }
+
+  .grid h3 {
+    font-size: var(--text-lg);
+  }
+
+  .meta {
+    color: var(--color-ink-soft);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .note {
+    color: var(--color-ink-soft);
+  }
+
+  /* ---- Education + certifications ---- */
+  .split {
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .split {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .split__col {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .plain {
+    display: grid;
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .plain > li {
+    display: grid;
+    gap: var(--space-1);
+  }
+</style>

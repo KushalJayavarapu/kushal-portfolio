@@ -1,0 +1,104 @@
+---
+/**
+ * Email link that never appears as plain text or a mailto: in the HTML source
+ * (docs/content-brief.md). The address ships reversed and base64-encoded; a tiny
+ * script decodes it into a real link when the visitor asks for it. Without JS the
+ * address is not shown at all; the LinkedIn and GitHub links next to it still work.
+ */
+interface Props {
+  variant?: 'primary' | 'secondary' | 'accent' | 'inverse';
+}
+
+const { variant = 'primary' } = Astro.props;
+
+const USER = 'kushalval2006';
+const DOMAIN = 'gmail.com';
+const encoded = btoa([...`${USER}@${DOMAIN}`].reverse().join(''));
+---
+
+<span class="email-reveal" data-email={encoded}>
+  <button type="button" class:list={['btn', `btn--${variant}`, 'press', 'mono']} hidden>
+    Show email
+  </button>
+  <noscript><span class="email-reveal__fallback">Email shows with JavaScript on.</span></noscript>
+</span>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('.email-reveal')) {
+    const button = root.querySelector('button');
+    const encoded = root.dataset.email;
+    if (!button || !encoded) continue;
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      const address = [...atob(encoded)].reverse().join('');
+      const link = document.createElement('a');
+      // Copy the button's attributes so Astro's scoped styles still match.
+      for (const { name, value } of button.attributes) {
+        if (name !== 'type' && name !== 'hidden') link.setAttribute(name, value);
+      }
+      link.classList.add('email-reveal__link');
+      link.href = `mailto:${address}`;
+      link.textContent = address;
+      button.replaceWith(link);
+      link.focus();
+    });
+  }
+</script>
+
+<style>
+  .email-reveal {
+    display: inline-flex;
+  }
+
+  /* Button.astro's styles are scoped to that component, so the reveal mirrors them. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: var(--space-3) var(--space-5);
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--_bg);
+    color: var(--_fg);
+  }
+
+  .email-reveal__link {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .btn[hidden] {
+    display: none;
+  }
+
+  .btn--primary {
+    --_bg: var(--color-primary);
+    --_fg: var(--color-on-primary);
+  }
+
+  .btn--secondary {
+    --_bg: transparent;
+    --_fg: var(--color-ink);
+  }
+
+  .btn--accent {
+    --_bg: var(--color-yellow);
+    --_fg: var(--color-ink);
+  }
+
+  .btn--inverse {
+    --_bg: transparent;
+    --_fg: var(--color-white);
+    border-color: var(--color-white);
+  }
+
+  .email-reveal__fallback {
+    font-weight: var(--font-weight-strong);
+  }
+</style>
