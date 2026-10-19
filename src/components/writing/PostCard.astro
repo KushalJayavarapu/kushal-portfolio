@@ -1,0 +1,77 @@
+---
+/**
+ * One post in a listing: a linked card (press physics) with date, reading time,
+ * title, description and tags. Tags are plain labels here because the whole
+ * card is already one link; tag pages are reached from the filter row.
+ */
+import Card from '../Card.astro';
+import Tag from '../Tag.astro';
+import { formatDate, postHref, readingMinutes, type Post } from '../../lib/blog';
+
+interface Props {
+  post: Post;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, headingLevel: Heading = 'h3' } = Astro.props;
+const { title, description, pubDate, tags, draft } = post.data;
+---
+
+<li class="post-card">
+  <Card href={postHref(post)}>
+    <p class="post-card__meta mono">
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+      <span aria-hidden="true">·</span>
+      <span>{readingMinutes(post.body)} min read</span>
+    </p>
+    <Heading class="post-card__title">{title}</Heading>
+    <p class="post-card__desc">{description}</p>
+    {
+      (draft || tags.length > 0) && (
+        <ul class="post-card__tags" aria-label="Tags">
+          {draft && (
+            <li>
+              <Tag tone="coral">Draft</Tag>
+            </li>
+          )}
+          {tags.map((tag) => (
+            <li>
+              <Tag>{tag}</Tag>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </Card>
+</li>
+
+<style>
+  .post-card {
+    list-style: none;
+  }
+
+  .post-card :global(.card) {
+    display: grid;
+    gap: var(--space-3);
+    height: 100%;
+  }
+
+  .post-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--color-ink-soft);
+  }
+
+  .post-card__title {
+    font-size: var(--text-xl);
+  }
+
+  .post-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+</style>
