@@ -4,6 +4,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Tag from '../../components/Tag.astro';
 import { WRITING } from '../../config/writing';
+import { ogImagePath } from '../../lib/og';
 import { formatDate, getPosts, readingMinutes, tagHref, type Post } from '../../lib/blog';
 
 export const getStaticPaths = (async () => {
@@ -19,6 +20,8 @@ const { Content } = await render(post);
 <BaseLayout
   title={title}
   description={description}
+  image={ogImagePath('writing', post.id)}
+  imageAlt={`${title}: ${description}`}
   article={{ publishedTime: pubDate, modifiedTime: updatedDate, tags }}
   noindex={draft}
 >
