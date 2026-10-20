@@ -11,8 +11,9 @@ const font = (/** @type {string} */ file) => `./src/assets/fonts/${file}`;
 // The production origin. Canonical URLs, Open Graph URLs, JSON-LD, the sitemap and
 // robots.txt all derive from this one value (via `Astro.site`).
 // Hosted on Cloudflare Pages (see README "Deploy"). This must match the Pages
-// project's production hostname; change it here if a custom domain is added.
-const SITE_URL = 'https://kushal-portfolio.pages.dev';
+// project's production hostname (Cloudflare added the -a3p suffix because the
+// bare name was taken); change it here if a custom domain is added.
+const SITE_URL = 'https://kushal-portfolio-a3p.pages.dev';
 
 export default defineConfig({
   site: SITE_URL,

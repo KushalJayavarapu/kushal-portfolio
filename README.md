@@ -20,10 +20,10 @@ npm run check    # astro check + TypeScript
 ```
 
 ## Deploy
-Hosted on **Cloudflare Pages** with its GitHub integration, at https://kushal-portfolio.pages.dev.
+Hosted on **Cloudflare Pages** with its GitHub integration, at https://kushal-portfolio-a3p.pages.dev.
 
 - Production: every push to `main` builds and deploys.
-- Previews: every PR gets its own `*.kushal-portfolio.pages.dev` URL, posted on the PR (preview URLs are served with `X-Robots-Tag: noindex`).
+- Previews: every PR gets its own `*.kushal-portfolio-a3p.pages.dev` URL, posted on the PR (preview URLs are served with `X-Robots-Tag: noindex`).
 - Build settings (set once in the Cloudflare dashboard): framework preset Astro, build command `npm run build`, output directory `dist`. Node comes from `.nvmrc`.
 - Response headers (security headers, long-lived caching for hashed `/_astro/*` files) live in `public/_headers`.
 - Analytics: Cloudflare Web Analytics, enabled on the Pages project (Metrics tab). It is cookieless and injected by Cloudflare, so there is no tracking code in this repo.
