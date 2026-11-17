@@ -22,6 +22,10 @@ type Props = SeoProps;
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-body" preload />
     <Font cssVariable="--font-mono" />
+    <!-- Flags JS before first paint so scroll-reveal's hidden state never flashes. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
     <slot name="head" />
   </head>
   <body>
@@ -31,5 +35,39 @@ type Props = SeoProps;
       <slot />
     </main>
     <Footer />
+    <!-- Motion #5 scroll reveal and #6 marquee offscreen pause. Enhancement only. -->
+    <script is:inline>
+      (() => {
+        const items = [];
+        document.querySelectorAll('[data-reveal]').forEach((group) => {
+          [...group.children].forEach((el, i) => {
+            el.style.setProperty('--i', String(Math.min(i, 6)));
+            items.push(el);
+          });
+        });
+        const marquees = document.querySelectorAll('[data-marquee]');
+        if (!('IntersectionObserver' in window)) {
+          items.forEach((el) => el.classList.add('is-in'));
+          return;
+        }
+        const reveal = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('is-in');
+              reveal.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.15 },
+        );
+        items.forEach((el) => reveal.observe(el));
+        const pause = new IntersectionObserver((entries) => {
+          entries.forEach((entry) =>
+            entry.target.classList.toggle('is-paused', !entry.isIntersecting),
+          );
+        });
+        marquees.forEach((el) => pause.observe(el));
+      })();
+    </script>
   </body>
 </html>

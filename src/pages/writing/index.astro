@@ -68,7 +68,7 @@ const tags = collectTags(posts);
     <TagFilter tags={tags} />
     {
       posts.length > 0 ? (
-        <ul class="posts__list">
+        <ul class="posts__list" data-reveal>
           {posts.map((post) => (
             <PostCard post={post} />
           ))}

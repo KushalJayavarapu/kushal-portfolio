@@ -22,6 +22,9 @@ export const tagHref = (tag: string) => `/writing/tags/${tagSlug(tag)}/`;
 
 export const postHref = (post: Post) => `/writing/${post.id}/`;
 
+/** Shared `transition:name` so a post card title morphs into the post heading (motion #8). */
+export const postTitleTransition = (post: Post) => `post-title-${post.id}`;
+
 /** Every tag across `posts`, with its post count, most used first. */
 export function collectTags(posts: Post[]) {
   const counts = new Map<string, { tag: string; count: number }>();

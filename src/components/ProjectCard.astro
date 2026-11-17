@@ -48,7 +48,7 @@ const hidden = stack.length - shown.length;
       </ul>
     )
   }
-  <span class="project-card__cta mono" aria-hidden="true">Read case study &rarr;</span>
+  <span class="project-card__cta mono" aria-hidden="true">Read case study <span class="arrow">&rarr;</span></span>
 </Card>
 
 <style>
@@ -60,6 +60,12 @@ const hidden = stack.length - shown.length;
     align-items: flex-start;
     gap: var(--space-3);
     height: 100%;
+    --tilt: -1deg;
+  }
+
+  /* Motion #7, sticker tilt: neighbouring cards lean opposite ways on hover. */
+  :global(li:nth-child(even) > a.card.project-card) {
+    --tilt: 1deg;
   }
 
   .project-card__context {

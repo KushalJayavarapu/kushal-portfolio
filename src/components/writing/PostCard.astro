@@ -6,7 +6,7 @@
  */
 import Card from '../Card.astro';
 import Tag from '../Tag.astro';
-import { formatDate, postHref, readingMinutes, type Post } from '../../lib/blog';
+import { formatDate, postHref, postTitleTransition, readingMinutes, type Post } from '../../lib/blog';
 
 interface Props {
   post: Post;
@@ -24,7 +24,7 @@ const { title, description, pubDate, tags, draft } = post.data;
       <span aria-hidden="true">·</span>
       <span>{readingMinutes(post.body)} min read</span>
     </p>
-    <Heading class="post-card__title">{title}</Heading>
+    <Heading class="post-card__title" transition:name={postTitleTransition(post)}>{title}</Heading>
     <p class="post-card__desc">{description}</p>
     {
       (draft || tags.length > 0) && (

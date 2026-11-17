@@ -1,0 +1,117 @@
+---
+/**
+ * Motion catalogue #4: the hero positioning line types out a short phrase with a
+ * blinking cursor and cycles through the approved phrases from the content brief.
+ *
+ * - The first phrase is in the DOM as static text, so no-JS, crawlers and
+ *   reduced-motion all get the full sentence; the script only runs otherwise.
+ * - Screen readers read one stable sentence (visually hidden); the animated copy
+ *   is aria-hidden so it never announces half-typed words.
+ * - Height is reserved by an invisible copy of the longest phrase stacked in the
+ *   same grid cell, so typing and deleting never shifts the layout (CLS 0).
+ */
+interface Props {
+  /** Subject that stays put in front of the typed phrase, e.g. "Kushal". */
+  subject: string;
+  phrases: readonly string[];
+  class?: string;
+}
+
+const { subject, phrases, class: className } = Astro.props;
+const first = phrases[0] ?? '';
+const longest = phrases.reduce((a, b) => (b.length > a.length ? b : a), '');
+---
+
+<p class:list={['typing', className]} data-typing data-phrases={JSON.stringify(phrases)}>
+  <span class="visually-hidden">{subject} {first}</span>
+  <span class="typing__stack" aria-hidden="true">
+    <span class="typing__sizer">{subject} {longest}</span>
+    <span class="typing__line"
+      >{subject} <span class="typing__text" data-typing-text>{first}</span><span
+        class="typing__cursor"
+        data-typing-cursor></span></span
+    >
+  </span>
+</p>
+
+<style>
+  .typing__stack {
+    display: inline-grid;
+  }
+
+  /* Both copies share one cell; the invisible longest phrase sets the height. */
+  .typing__sizer,
+  .typing__line {
+    grid-area: 1 / 1;
+  }
+
+  .typing__sizer {
+    visibility: hidden;
+  }
+
+  .typing__cursor {
+    display: inline-block;
+    width: 0.09em;
+    height: 1em;
+    margin-left: 0.08em;
+    vertical-align: -0.12em;
+    background: var(--color-blue);
+    /* Static until the script takes over; a cursor on a static line looks broken. */
+    visibility: hidden;
+  }
+
+  .typing--live .typing__cursor {
+    visibility: visible;
+    animation: typing-blink 1s step-end infinite;
+  }
+
+  @keyframes typing-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-typing]');
+    if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let phrases = [];
+    try {
+      phrases = JSON.parse(root.dataset.phrases || '[]');
+    } catch (e) {
+      return;
+    }
+    if (phrases.length < 2) return;
+    const text = root.querySelector('[data-typing-text]');
+    root.classList.add('typing--live');
+
+    const TYPE = 42, ERASE = 22, HOLD = 2400, GAP = 500;
+    let i = 0, timer = 0;
+    const later = (fn, ms) => { timer = setTimeout(fn, ms); };
+
+    const erase = () => {
+      const s = text.textContent;
+      if (s.length) {
+        text.textContent = s.slice(0, -1);
+        later(erase, ERASE);
+      } else {
+        i = (i + 1) % phrases.length;
+        later(() => type(0), GAP);
+      }
+    };
+    const type = (n) => {
+      const p = phrases[i];
+      text.textContent = p.slice(0, n);
+      if (n < p.length) later(() => type(n + 1), TYPE + (p[n] === ' ' ? 40 : 0));
+      else later(erase, HOLD);
+    };
+
+    // Pause while the tab is hidden; resume by erasing whatever is on screen.
+    document.addEventListener('visibilitychange', () => {
+      clearTimeout(timer);
+      if (!document.hidden) later(erase, GAP);
+    });
+    later(erase, HOLD);
+  })();
+</script>
