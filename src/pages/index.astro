@@ -8,6 +8,7 @@ import Button from '../components/Button.astro';
 import Card from '../components/Card.astro';
 import EmailReveal from '../components/EmailReveal.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import IndexCard from '../components/IndexCard.astro';
 import TypingLine from '../components/TypingLine.astro';
 import StackMarquee from '../components/StackMarquee.astro';
 import PostCard from '../components/writing/PostCard.astro';
@@ -108,19 +109,7 @@ const facts = [
           </figure>
         )
       }
-      <div class="index-card">
-        <p class="mono index-card__title">At a glance</p>
-        <dl>
-          {
-            facts.map(({ label, value }) => (
-              <div>
-                <dt class="mono">{label}</dt>
-                <dd>{value}</dd>
-              </div>
-            ))
-          }
-        </dl>
-      </div>
+      <IndexCard title="At a glance" facts={facts} />
     </div>
   </section>
 
@@ -310,69 +299,6 @@ const facts = [
   @media (min-width: 86rem) {
     .photo__note {
       display: block;
-    }
-  }
-
-  /* "At a glance" as a ruled index card with a red header line. */
-  .index-card {
-    --line: 28px;
-    width: 100%;
-    padding: 10px var(--space-5) var(--space-5);
-    background-color: var(--color-surface);
-    background-image:
-      linear-gradient(
-        transparent 39px,
-        var(--color-margin) 39px,
-        var(--color-margin) 41px,
-        transparent 41px
-      ),
-      repeating-linear-gradient(
-        transparent 0 calc(var(--line) - 1px),
-        var(--color-rule) calc(var(--line) - 1px) var(--line)
-      );
-    background-position:
-      0 0,
-      0 41px;
-    background-repeat: no-repeat, repeat;
-    background-size:
-      100% 100%,
-      100% calc(100% - 41px);
-    box-shadow: var(--shadow-rest);
-    transform: rotate(-1.4deg);
-  }
-
-  .index-card__title {
-    height: 31px;
-    line-height: 31px;
-    color: var(--color-coral-ink);
-  }
-
-  .index-card dl {
-    margin-top: 6px;
-  }
-
-  .index-card dl > div {
-    display: grid;
-    grid-template-columns: 7.5em 1fr;
-    gap: var(--space-3);
-    line-height: var(--line);
-  }
-
-  .index-card dt {
-    color: var(--color-ink-soft);
-    line-height: inherit;
-  }
-
-  .index-card dd {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
-  @media (max-width: 32rem) {
-    .index-card dl > div {
-      grid-template-columns: 1fr;
-      gap: 0;
     }
   }
 

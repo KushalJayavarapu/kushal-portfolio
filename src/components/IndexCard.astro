@@ -1,0 +1,101 @@
+---
+/**
+ * A ruled index card with a red header line: a titled list of label/value facts.
+ * Used for "At a glance" on the home page and the fact sheet on case studies.
+ * Rows sit on the card's ruled lines, so keep values short.
+ */
+interface Props {
+  title: string;
+  facts: { label: string; value: string }[];
+  /** Resting rotation, e.g. "-1.4deg". */
+  tilt?: string;
+  /** Put each value under its label; use in narrow columns. */
+  stacked?: boolean;
+  class?: string;
+}
+
+const { title, facts, tilt = '-1.4deg', stacked = false, class: className } = Astro.props;
+---
+
+<div class:list={['index-card', { 'index-card--stacked': stacked }, className]} style={`--card-tilt:${tilt}`}>
+  <p class="mono index-card__title">{title}</p>
+  <dl>
+    {
+      facts.map(({ label, value }) => (
+        <div>
+          <dt class="mono">{label}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>
+
+<style>
+  .index-card {
+    --line: 28px;
+    width: 100%;
+    padding: 10px var(--space-5) var(--space-5);
+    background-color: var(--color-surface);
+    background-image:
+      linear-gradient(
+        transparent 39px,
+        var(--color-margin) 39px,
+        var(--color-margin) 41px,
+        transparent 41px
+      ),
+      repeating-linear-gradient(
+        transparent 0 calc(var(--line) - 1px),
+        var(--color-rule) calc(var(--line) - 1px) var(--line)
+      );
+    background-position:
+      0 0,
+      0 41px;
+    background-repeat: no-repeat, repeat;
+    background-size:
+      100% 100%,
+      100% calc(100% - 41px);
+    box-shadow: var(--shadow-rest);
+    transform: rotate(var(--card-tilt));
+  }
+
+  .index-card__title {
+    height: 31px;
+    line-height: 31px;
+    color: var(--color-coral-ink);
+  }
+
+  dl {
+    margin-top: 6px;
+  }
+
+  dl > div {
+    display: grid;
+    grid-template-columns: 7.5em 1fr;
+    gap: var(--space-3);
+    line-height: var(--line);
+  }
+
+  dt {
+    color: var(--color-ink-soft);
+    line-height: inherit;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .index-card--stacked dl > div {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  @media (max-width: 32rem) {
+    dl > div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

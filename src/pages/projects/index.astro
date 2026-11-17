@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Highlight from '../../components/Highlight.astro';
-import Tag from '../../components/Tag.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { getProjects } from '../../lib/projects';
 
@@ -15,7 +14,7 @@ const more = projects.filter((p) => !p.data.featured);
   description="Research and hackathon projects by Kushal Jayavarapu, each with a short case study: the problem, what he built, and the stack."
 >
   <section class="container intro">
-    <Tag tone="yellow">Projects</Tag>
+    <p class="mono intro__eyebrow">Projects · {projects.length} entries</p>
     <h1>Things I've <Highlight>built</Highlight>.</h1>
     <p class="intro__lede">
       Agent-robustness research and hackathon builds. Each one opens a short case study: the
@@ -24,12 +23,12 @@ const more = projects.filter((p) => !p.data.featured);
   </section>
 
   <section class="container group" aria-labelledby="featured-title">
-    <h2 id="featured-title" class="group__title mono">Featured</h2>
+    <h2 id="featured-title" class="group__title">Featured</h2>
     <ul class="grid" data-reveal>
       {
-        featured.map((project) => (
+        featured.map((project, i) => (
           <li>
-            <ProjectCard project={project} />
+            <ProjectCard project={project} headingLevel="h3" number={i + 1} />
           </li>
         ))
       }
@@ -39,11 +38,11 @@ const more = projects.filter((p) => !p.data.featured);
   {
     more.length > 0 && (
       <section class="container group" aria-labelledby="more-title">
-        <h2 id="more-title" class="group__title mono">More projects</h2>
+        <h2 id="more-title" class="group__title">More projects</h2>
         <ul class="grid" data-reveal>
-          {more.map((project) => (
+          {more.map((project, i) => (
             <li>
-              <ProjectCard project={project} tone="cream" />
+              <ProjectCard project={project} number={featured.length + i + 1} />
             </li>
           ))}
         </ul>
@@ -60,6 +59,10 @@ const more = projects.filter((p) => !p.data.featured);
     padding-block: var(--space-8) var(--space-7);
   }
 
+  .intro__eyebrow {
+    color: var(--color-ink-soft);
+  }
+
   .intro__lede {
     font-size: var(--text-lg);
   }
@@ -71,14 +74,21 @@ const more = projects.filter((p) => !p.data.featured);
   }
 
   .group__title {
-    font-size: var(--text-sm);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    text-transform: none;
+    letter-spacing: var(--tracking-display);
     color: var(--color-ink);
+  }
+
+  .grid > :global(li) {
+    display: grid;
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-6);
+    gap: var(--space-7) var(--space-6);
     padding: 0;
     list-style: none;
   }
