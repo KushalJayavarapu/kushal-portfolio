@@ -2,16 +2,20 @@
 import { NAV, SITE } from '../config/site';
 import Scribble from './Scribble.astro';
 
+// The header sticks to the top and its links jump to sections of the home page.
 // Motion catalogue #9: a coral pen underline slides in from the left on hover
-// and stays drawn under the current section.
+// and stays drawn under the current section. On the home page a small inline
+// script moves it as you scroll; on writing pages it sits under "Writing".
 const path = Astro.url.pathname;
-const isCurrent = (href: string) => path === href || path.startsWith(href);
+const isCurrent = (section: string) => path.startsWith(`/${section}/`);
 ---
 
 <header class="site-header">
   <div class="container site-header__inner">
     <a href="/" class="wordmark"
-      >{SITE.name}<span class="visually-hidden">, home</span><Scribble
+      ><span class="wordmark__full">{SITE.name}</span><span class="wordmark__short" aria-hidden="true"
+        >{SITE.wordmark}</span
+      ><span class="visually-hidden">, home</span><Scribble
         shape="underline-thin"
         class="wordmark__mark"
       /></a
@@ -24,7 +28,8 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
               <a
                 href={item.href}
                 class="nav__link mono"
-                aria-current={isCurrent(item.href) ? 'page' : undefined}
+                data-section={item.section}
+                aria-current={isCurrent(item.section) ? 'page' : undefined}
               >
                 {item.label}
               </a>
@@ -36,15 +41,65 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
   </div>
 </header>
 
+<!-- Marks the section in view as current. Enhancement only: without it the links still jump. -->
+<script is:inline>
+  // The header is parsed before the sections exist, so wait for the document.
+  document.addEventListener('DOMContentLoaded', () => {
+    const links = [...document.querySelectorAll('.nav__link[data-section]')];
+    const sections = links.map((link) => document.getElementById(link.dataset.section));
+    if (sections.some((el) => !el) || !('IntersectionObserver' in window)) return;
+    const top = document.getElementById('top');
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          links.forEach((link) => {
+            if (link.dataset.section === entry.target.id) link.setAttribute('aria-current', 'true');
+            else link.removeAttribute('aria-current');
+          });
+        });
+      },
+      { rootMargin: '-40% 0px -55% 0px' },
+    );
+    [top, ...sections].forEach((el) => el && spy.observe(el));
+  });
+</script>
+
 <style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-grid);
+  }
 
   .site-header__inner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3) var(--space-5);
-    padding-block: var(--space-5) var(--space-4);
+    gap: var(--space-1) var(--space-5);
+    padding-block: var(--space-2);
+  }
+
+  /* Narrow screens get the initials so the header stays one row tall. */
+  .wordmark__full {
+    display: none;
+  }
+
+  @media (min-width: 44rem) {
+    .site-header__inner {
+      padding-block: var(--space-3);
+    }
+
+    .wordmark__full {
+      display: inline;
+    }
+
+    .wordmark__short {
+      display: none;
+    }
   }
 
   .wordmark {
@@ -68,9 +123,15 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
   .nav {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-1) var(--space-2);
+    gap: 0 var(--space-1);
     padding: 0;
     list-style: none;
+  }
+
+  @media (min-width: 44rem) {
+    .nav {
+      gap: var(--space-1) var(--space-2);
+    }
   }
 
   .nav__link {
@@ -78,15 +139,15 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
-    padding-inline: var(--space-2);
+    padding-inline: var(--space-1);
     text-decoration: none;
   }
 
   .nav__link::after {
     content: '';
     position: absolute;
-    left: var(--space-2);
-    right: var(--space-2);
+    left: var(--space-1);
+    right: var(--space-1);
     bottom: 0.6rem;
     height: 2px;
     background: var(--color-coral);
@@ -101,7 +162,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
   }
 
   /* Current section: the underline stays drawn. */
-  .nav__link[aria-current='page']::after {
+  .nav__link[aria-current]::after {
     transform: scaleX(1);
   }
 </style>

@@ -19,7 +19,8 @@ Node >= 22.22.0 (see `.nvmrc`).
 ## Where things live
 - Tokens: `src/styles/tokens.css` (colour, type, spacing, shadows, motion). Global base + press physics: `src/styles/global.css`.
 - Fonts: `src/assets/fonts/` via Astro's Fonts API in `astro.config.mjs`.
-- Components: `src/components/` (`Highlight`, `Scribble`, `Button`, `Card`, `Tag`, `Header`, `Footer`, `TypingLine`, `StackMarquee`). Layout: `src/layouts/BaseLayout.astro`.
+- Single-page site: `src/pages/index.astro` holds every section (hero, `#projects`, `#about`, `#writing`, `#contact`); the sticky header jumps between them. Only blog posts and the post archive (`/writing/`) are separate pages. Old `/projects/*`, `/about`, `/contact` addresses redirect to the matching anchor (`redirects` in `astro.config.mjs`).
+- Components: `src/components/` (`Highlight`, `Scribble`, `Button`, `Card`, `Tag`, `IndexCard`, `ProjectEntry`, `Header`, `Footer`, `TypingLine`, `StackMarquee`); page sections in `src/components/sections/`. Layout: `src/layouts/BaseLayout.astro`.
 - Site constants (nav, social links): `src/config/site.ts`. Collections: `src/content.config.ts`.
 
 ## Conventions
@@ -29,6 +30,7 @@ Node >= 22.22.0 (see `.nvmrc`).
 - Photos and project covers are optional content: render nothing when a file is missing, never a placeholder. Hero portrait: `src/assets/photos/kushal.*`; project cover: `cover` in the entry's frontmatter.
 - Never label a link "RSS" (it misreads for an Indian audience); say "Blog feed".
 - Monospace is for UI chrome only (tags, buttons, timestamps), not body or headlines. The handwriting face (`.hand`) is for short decorative margin notes only.
+- Keep the page scannable: long detail (project write-ups, role bullets, full skills list) goes in a native `<details class="more">` fold.
 - Animations: CSS first, transform/opacity only, per `docs/motion-spec.md`; every animation has a reduced-motion and no-JS fallback.
 - Small focused PRs, one per thread. Don't add dependencies beyond Astro integrations without asking.
 

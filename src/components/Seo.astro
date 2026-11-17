@@ -89,7 +89,7 @@ const jsonLd = article
       {article.modifiedTime && (
         <meta property="article:modified_time" content={article.modifiedTime.toISOString()} />
       )}
-      <meta property="article:author" content={new URL('/about/', site).href} />
+      <meta property="article:author" content={new URL('/#about', site).href} />
       {article.tags?.map((tag) => <meta property="article:tag" content={tag} />)}
     </>
   )

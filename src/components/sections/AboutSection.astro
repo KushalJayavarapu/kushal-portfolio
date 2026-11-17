@@ -1,12 +1,15 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Highlight from '../components/Highlight.astro';
-import Button from '../components/Button.astro';
-import Card from '../components/Card.astro';
-import Tag from '../components/Tag.astro';
+/**
+ * The About section of the single page: bio on ruled paper, the experience log,
+ * results, education and certifications. Longer lists (what each role involved,
+ * the full skills list, workshops) fold away in native <details>.
+ */
+import Button from '../Button.astro';
+import Card from '../Card.astro';
+import Tag from '../Tag.astro';
 
-// Every fact on this page traces to docs/content-brief.md. Things the brief marks
-// as TODO (the cleaned résumé, the third certification) stay off the page.
+// Every fact in this section traces to docs/content-brief.md. Things the brief marks
+// as TODO (the cleaned résumé, the third certification) stay off the site.
 
 // TODO(Kushal): the résumé button stays hidden until a cleaned PDF (no phone, CGPA
 // or SRN) is committed as public/resume.pdf. Then set this to true.
@@ -168,114 +171,86 @@ const activities = [
 ];
 ---
 
-<BaseLayout
-  title="About"
-  description="Kushal Jayavarapu is a Computer Science undergraduate at PES University in Bengaluru, building AI and data products."
->
-  <section class="container intro" aria-labelledby="about-title">
-    <Tag>About</Tag>
-    <h1 id="about-title">About <Highlight>me</Highlight></h1>
-    <p class="intro__bio">
-      I'm a Computer Science undergraduate at PES University in Bengaluru, building AI and data
-      products. I did summer research at PES University's Center for Cloud Computing and Big Data,
-      and I work on benchmarks for how LLM agents hold up when their environment changes. Outside
-      coursework I build hackathon projects, lead club operations, and write a weekly AI explainer
-      series. I'm aiming for forward-deployed engineering roles, with a side interest in finance and
-      data analytics.
-    </p>
-    <div class="actions">
-      {hasResume && <Button href="/resume.pdf">Résumé (PDF)</Button>}
-      <Button href="/contact/" variant={hasResume ? 'secondary' : 'primary'}>Get in touch</Button>
-      <Button href="/projects/" variant="secondary">See my projects</Button>
+<section id="about" aria-labelledby="about-title">
+  <div class="paper-ruled">
+    <div class="container bio">
+      <header class="section__head">
+        <p class="mono eyebrow">About</p>
+        <h2 id="about-title">A bit about me</h2>
+      </header>
+      <div class="bio__body">
+        <p>
+          I'm a Computer Science undergraduate at PES University in Bengaluru, building AI and data
+          products. I did summer research at PES University's Center for Cloud Computing and Big
+          Data, and I work on benchmarks for how LLM agents hold up when their environment changes.
+        </p>
+        <p>
+          Outside coursework I build hackathon projects, lead club operations, and write a weekly AI
+          explainer series. I'm aiming for forward-deployed engineering roles, with a side interest
+          in finance and data analytics.
+        </p>
+        {hasResume && <Button href="/resume.pdf">Résumé (PDF)</Button>}
+      </div>
     </div>
-  </section>
+  </div>
 
-  <section class="container section" aria-labelledby="experience-title">
-    <header class="section__head">
-      <Tag tone="yellow">Experience</Tag>
-      <h2 id="experience-title">Where I've <Highlight tone="ink">worked</Highlight></h2>
-    </header>
-    <ol class="timeline" role="list">
+  <div class="container section">
+    <h3 class="section__title">Where I've worked</h3>
+    <ol class="log paper-sheet" role="list">
       {
         experience.map((role) => (
-          <li class="timeline__item">
-            <p class="timeline__dates mono">{role.dates}</p>
-            <div class="timeline__body">
-              <h3>{role.title}</h3>
-              <p class="timeline__org">{role.org}</p>
-              {role.points.length > 0 && (
-                <ul class="points">
-                  {role.points.map((point) => (
-                    <li>{point}</li>
-                  ))}
-                </ul>
+          <li class="log__item">
+            <p class="log__dates mono">{role.dates}</p>
+            <div class="log__body">
+              <h4>{role.title}</h4>
+              <p class="log__org">{role.org}</p>
+              {role.points.length === 1 && <p>{role.points[0]}</p>}
+              {role.points.length > 1 && (
+                <details class="more">
+                  <summary class="mono">
+                    What I did<span class="visually-hidden"> as {role.title}</span>
+                  </summary>
+                  <ul class="points">
+                    {role.points.map((point) => (
+                      <li>{point}</li>
+                    ))}
+                  </ul>
+                </details>
               )}
             </div>
           </li>
         ))
       }
     </ol>
-  </section>
+  </div>
 
-  <section class="container section" aria-labelledby="results-title">
-    <header class="section__head">
-      <Tag tone="coral">Results</Tag>
-      <h2 id="results-title">Notable <Highlight tone="ink">results</Highlight></h2>
-    </header>
-    <ul class="grid" role="list" data-reveal>
+  <div class="container section">
+    <h3 class="section__title">Notable results</h3>
+    <ul class="notes" role="list" data-reveal>
       {
         achievements.map((item) => (
           <li>
-            <Card class="stack">
+            <Card tape class="stack">
               <span class="mono meta">{item.meta}</span>
-              <h3>{item.title}</h3>
+              <h4>{item.title}</h4>
               {item.body && <p>{item.body}</p>}
             </Card>
           </li>
         ))
       }
     </ul>
-  </section>
+  </div>
 
-  <section class="container section" aria-labelledby="skills-title">
-    <header class="section__head">
-      <Tag tone="green">Skills</Tag>
-      <h2 id="skills-title">What I <Highlight tone="ink">work with</Highlight></h2>
-    </header>
-    <ul class="grid" role="list" data-reveal>
-      {
-        skills.map(({ group, items }) => (
-          <li>
-            <Card class="stack">
-              <h3 class="skills__group">{group}</h3>
-              <ul class="tags" aria-label={group}>
-                {items.map((item) => (
-                  <li>
-                    <Tag>{item}</Tag>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="note">Spoken languages: English and Hindi (professional working proficiency).</p>
-  </section>
-
-  <section class="container section split" aria-labelledby="education-title">
+  <div class="container section split">
     <div class="split__col">
-      <header class="section__head">
-        <Tag tone="blue">Learning</Tag>
-        <h2 id="education-title">Education</h2>
-      </header>
+      <h3 class="section__title">Education</h3>
       <ul class="plain" role="list">
         {
           education.map((item) => (
             <li>
               <p class="mono meta">{item.dates}</p>
-              <h3>{item.title}</h3>
-              <p class="timeline__org">{item.org}</p>
+              <h4>{item.title}</h4>
+              <p class="log__org">{item.org}</p>
               {item.note && <p>{item.note}</p>}
             </li>
           ))
@@ -283,104 +258,157 @@ const activities = [
       </ul>
     </div>
     <div class="split__col">
-      <header class="section__head">
-        <Tag tone="purple">Credentials</Tag>
-        <h2 id="certs-title">Certifications</h2>
-      </header>
+      <h3 class="section__title">Certifications</h3>
       <ul class="plain" role="list">
         {
           certifications.map((item) => (
             <li>
               <p class="mono meta">{item.meta}</p>
-              <h3>{item.title}</h3>
+              <h4>{item.title}</h4>
               {item.body && <p>{item.body}</p>}
             </li>
           ))
         }
       </ul>
     </div>
-  </section>
+  </div>
 
-  <section class="container section" aria-labelledby="activities-title">
-    <header class="section__head">
-      <Tag>Also</Tag>
-      <h2 id="activities-title">Workshops and activities</h2>
-    </header>
-    <ul class="points">
-      {activities.map((item) => <li>{item}</li>)}
-    </ul>
-  </section>
-</BaseLayout>
+  <div class="container section extras">
+    <details class="more">
+      <summary class="mono">Full skills list</summary>
+      <dl class="skills">
+        {
+          skills.map(({ group, items }) => (
+            <div class="skills__row">
+              <dt class="mono">{group}</dt>
+              <dd>
+                <ul class="tags" aria-label={group}>
+                  {items.map((item) => (
+                    <li>
+                      <Tag>{item}</Tag>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="note">Spoken languages: English and Hindi (professional working proficiency).</p>
+    </details>
+    <details class="more">
+      <summary class="mono">Workshops and activities</summary>
+      <ul class="points">
+        {activities.map((item) => <li>{item}</li>)}
+      </ul>
+    </details>
+  </div>
+</section>
 
 <style>
-  .intro {
+/* ---- Bio, on ruled paper ---- */
+  .bio {
+    display: grid;
+    align-items: start;
+    gap: var(--space-6);
+    padding-block: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .bio {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    }
+  }
+
+  .bio__body {
     display: grid;
     justify-items: start;
     gap: var(--space-5);
-    padding-block: var(--space-8) 0;
   }
 
-  .intro__bio {
+  /* Text sits on the ruled lines. */
+  .bio__body p {
     font-size: var(--text-lg);
-  }
-
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
+    line-height: var(--paper-rule);
+    color: var(--color-ink);
   }
 
   .section {
     display: grid;
     justify-items: start;
     gap: var(--space-6);
-    padding-block: var(--space-8) 0;
+    padding-block: var(--space-7) 0;
+  }
+
+  .section > * {
+    min-width: 0;
   }
 
   .section__head {
     display: grid;
     justify-items: start;
-    gap: var(--space-3);
-  }
-
-  /* ---- Experience timeline ---- */
-  .timeline {
-    display: grid;
-    width: 100%;
-    padding: 0;
-    list-style: none;
-    border-top: var(--border);
-  }
-
-  .timeline__item {
-    display: grid;
-    gap: var(--space-2) var(--space-6);
-    padding-block: var(--space-5);
-    border-bottom: var(--border-thin);
-  }
-
-  @media (min-width: 48rem) {
-    .timeline__item {
-      grid-template-columns: 12rem minmax(0, 1fr);
-    }
-  }
-
-  .timeline__dates {
-    padding-top: 0.4em;
-    color: var(--color-ink-soft);
-  }
-
-  .timeline__body {
-    display: grid;
     gap: var(--space-2);
   }
 
-  .timeline__body h3,
-  .plain h3 {
+.section__title {
+    font-size: var(--text-xl);
+  }
+
+  /* ---- Experience: a logbook page, dates in the first column ---- */
+  .log {
+    display: grid;
+    width: 100%;
+    list-style: none;
+  }
+
+  .log__item {
+    display: grid;
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .log__item:first-child {
+    padding-top: 0;
+  }
+
+  .log__item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .log__item {
+      grid-template-columns: 11rem minmax(0, 1fr);
+    }
+  }
+
+  .log__dates {
+    padding-top: 0.5em;
+    color: var(--color-coral-ink);
+  }
+
+  .log__body {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2);
+  }
+
+  .log .points {
+    padding-top: var(--space-2);
+  }
+
+  .log__body h4,
+  .plain h4,
+  .notes h4 {
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-display);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-display);
     font-size: var(--text-lg);
   }
 
-  .timeline__org {
+  .log__org {
     color: var(--color-ink);
     font-weight: var(--font-weight-strong);
   }
@@ -397,33 +425,80 @@ const activities = [
     color: var(--color-ink);
   }
 
-  /* ---- Card grids ---- */
-  .grid {
+  /* ---- Results: notes taped to the page, each a little crooked ---- */
+  .notes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-    gap: var(--space-6);
+    gap: var(--space-7) var(--space-6);
     width: 100%;
-    padding: 0;
+    padding: var(--space-3) 0 0;
     list-style: none;
   }
 
-  .grid > li {
+  .notes > li {
     display: grid;
   }
 
-  .grid :global(.stack) {
+  .notes > li:nth-child(odd) {
+    rotate: -0.8deg;
+  }
+
+  .notes > li:nth-child(even) {
+    rotate: 0.7deg;
+  }
+
+  .notes :global(.stack) {
     display: grid;
     align-content: start;
     justify-items: start;
     gap: var(--space-3);
-  }
-
-  .grid h3 {
-    font-size: var(--text-lg);
+    padding-top: var(--space-6);
   }
 
   .meta {
     color: var(--color-ink-soft);
+  }
+
+  /* ---- Folded extras: skills as a list with one group per row ---- */
+  .extras {
+    gap: var(--space-2);
+  }
+
+  .extras > details {
+    width: 100%;
+  }
+
+  .skills {
+    display: grid;
+    width: 100%;
+    margin-top: var(--space-3);
+  }
+
+  .skills__row {
+    display: grid;
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-4);
+    border-bottom: var(--border-width-thin) dashed var(--color-ink-soft);
+  }
+
+  .skills__row:first-child {
+    border-top: var(--border-width-thin) dashed var(--color-ink-soft);
+  }
+
+  @media (min-width: 48rem) {
+    .skills__row {
+      grid-template-columns: 14rem minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .skills dt {
+    padding-top: 0.35em;
+    color: var(--color-ink);
+  }
+
+  .skills dd {
+    margin: 0;
   }
 
   .tags {
@@ -435,7 +510,12 @@ const activities = [
   }
 
   .note {
-    color: var(--color-ink-soft);
+    margin-top: var(--space-4);
+    color: var(--color-ink-muted);
+  }
+
+  .extras .points {
+    margin-top: var(--space-3);
   }
 
   /* ---- Education + certifications ---- */
@@ -465,5 +545,7 @@ const activities = [
   .plain > li {
     display: grid;
     gap: var(--space-1);
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--color-margin);
   }
 </style>

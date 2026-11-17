@@ -8,7 +8,5 @@ export async function getProjects(): Promise<Project[]> {
   return entries.sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title));
 }
 
-export const projectHref = (project: Project) => `/projects/${project.id}/`;
-
-/** Shared `transition:name` so a card title can morph into its case-study heading (motion #8). */
-export const projectTitleTransition = (project: Project) => `project-title-${project.id}`;
+/** Projects live on the home page; each one's sheet has its slug as its id. */
+export const projectHref = (project: Project) => `/#${project.id}`;

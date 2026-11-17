@@ -1,0 +1,324 @@
+---
+/**
+ * One project on the single-page site: a taped sheet with the short version up
+ * front (summary, facts, stack, links) and the full write-up folded away in a
+ * native <details>, so the page stays scannable. The sheet's `id` is the
+ * project's slug, which the jump list and the old /projects/<slug>/ redirects use.
+ */
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Button from './Button.astro';
+import IndexCard from './IndexCard.astro';
+import ProseHeading from './ProseHeading.astro';
+import Tag from './Tag.astro';
+import type { Project } from '../lib/projects';
+
+interface Props {
+  project: Project;
+  /** Entry number shown as a handwritten note in the corner, e.g. 1 -> "no. 01". */
+  number: number;
+}
+
+const { project, number } = Astro.props;
+const { Content } = await render(project);
+const {
+  title,
+  summary,
+  context,
+  period,
+  team,
+  role,
+  status,
+  result,
+  stack,
+  stackLabel,
+  links,
+  credits,
+  cover,
+  coverAlt,
+} = project.data;
+
+const facts = [
+  { label: 'When', value: period },
+  { label: 'Team', value: team },
+  { label: 'My role', value: role },
+  { label: 'Result', value: result },
+].filter((fact): fact is { label: string; value: string } => Boolean(fact.value));
+const titleId = `${project.id}-title`;
+// The short version shows a few tools; the full list is in the write-up.
+const MAX_STACK = 5;
+const shown = stack.slice(0, MAX_STACK);
+const hidden = stack.length - shown.length;
+---
+
+<article class="entry tape" id={project.id} aria-labelledby={titleId}>
+  <span class="entry__no hand" aria-hidden="true">no. {String(number).padStart(2, '0')}</span>
+  <div class="entry__top">
+    <div class="entry__main">
+      {context && <p class="mono entry__context">{context}</p>}
+      <h3 id={titleId}>{title}</h3>
+      <p class="entry__summary">{summary}</p>
+      {status && <span class="entry__stamp mono">{status}</span>}
+      {
+        shown.length > 0 && (
+          <ul class="entry__stack" aria-label={`${title} ${stackLabel.toLowerCase()}`}>
+            {shown.map((item) => (
+              <li>
+                <Tag>{item}</Tag>
+              </li>
+            ))}
+            {hidden > 0 && (
+              <li>
+                <Tag tone="ink">
+                  +{hidden}
+                  <span class="visually-hidden"> more, listed in the full write-up</span>
+                </Tag>
+              </li>
+            )}
+          </ul>
+        )
+      }
+      {
+        links.length > 0 && (
+          <div class="entry__links">
+            {links.map((link, i) => (
+              <Button href={link.href} variant={i === 0 ? 'primary' : 'secondary'}>
+                {link.label}
+                <span aria-hidden="true">&nearr;</span>
+              </Button>
+            ))}
+          </div>
+        )
+      }
+    </div>
+    {
+      (cover || facts.length > 0) && (
+        <div class="entry__side">
+          {cover && (
+            <figure class="entry__cover">
+              <Image
+                src={cover}
+                alt={coverAlt ?? ''}
+                widths={[400, 800]}
+                sizes="(min-width: 60rem) 20rem, 90vw"
+              />
+            </figure>
+          )}
+          {facts.length > 0 && <IndexCard title="Fact sheet" facts={facts} tilt="1.2deg" stacked />}
+        </div>
+      )
+    }
+  </div>
+
+  <details class="more">
+    <summary class="mono">Read the full write-up<span class="visually-hidden">: {title}</span></summary>
+    <div class="entry__writeup">
+      <div class="prose">
+        <Content components={{ h2: ProseHeading }} />
+      </div>
+      {
+        hidden > 0 && (
+          <section class="entry__credits" aria-label={`${title} full ${stackLabel.toLowerCase()}`}>
+            <p class="mono">{stackLabel}</p>
+            <ul class="entry__stack">
+              {stack.map((item) => (
+                <li>
+                  <Tag>{item}</Tag>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        credits.length > 0 && (
+          <section class="entry__credits" aria-label={`${title} credits`}>
+            <p class="mono">Credits</p>
+            <ul>
+              {credits.map((credit) => (
+                <li>
+                  <strong>{credit.name}</strong>
+                  <span>{credit.role}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </details>
+</article>
+
+<style>
+  .entry {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-7) var(--space-5) var(--space-5);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-rest);
+  }
+
+  @media (min-width: 40rem) {
+    .entry {
+      padding: var(--space-7) var(--space-7) var(--space-6);
+    }
+  }
+
+  .entry__no {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-5);
+    font-size: 1.35rem;
+    transform: rotate(4deg);
+  }
+
+  .entry__top {
+    display: grid;
+    align-items: start;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 60rem) {
+    .entry__top {
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      gap: var(--space-8);
+    }
+
+    .entry__side {
+      padding-top: var(--space-5);
+    }
+  }
+
+  .entry__main {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .entry__context {
+    /* Leaves the corner clear for the handwritten entry number. */
+    padding-right: 4.5rem;
+    color: var(--color-ink-soft);
+  }
+
+  .entry h3 {
+    font-size: var(--text-2xl);
+    line-height: 1.05;
+  }
+
+  .entry__summary {
+    font-size: var(--text-lg);
+    line-height: 1.5;
+  }
+
+  /* Rubber stamp for a status such as "paper awaiting publication approval". */
+  .entry__stamp {
+    padding: var(--space-1) var(--space-2);
+    border: 2.5px solid var(--color-coral-ink);
+    color: var(--color-coral-ink);
+    line-height: 1.3;
+    transform: rotate(-2deg);
+  }
+
+  .entry__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .entry__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding-top: var(--space-2);
+  }
+
+  .entry__side {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 24rem;
+  }
+
+  .entry__cover {
+    padding: 8px;
+    background: var(--color-white);
+    box-shadow: var(--shadow-rest);
+    transform: rotate(-0.8deg);
+  }
+
+  .entry__cover :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---- The folded-away write-up ---- */
+  .entry__writeup {
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-5);
+    margin-top: var(--space-2);
+    border-top: var(--border-width-thin) dashed var(--color-ink-soft);
+  }
+
+  /* MDX output carries no scope attribute, hence :global. */
+  .prose {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .prose :global(> *) {
+    max-width: var(--measure);
+  }
+
+  .prose :global(h4) {
+    margin-top: var(--space-4);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-display);
+    line-height: var(--leading-snug);
+  }
+
+  .prose :global(h4:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.25em;
+    color: var(--color-ink-muted);
+  }
+
+  .prose :global(li::marker) {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .entry__credits {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .entry__credits ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .entry__credits li {
+    display: grid;
+    line-height: var(--leading-snug);
+  }
+
+  .entry__credits span {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+</style>

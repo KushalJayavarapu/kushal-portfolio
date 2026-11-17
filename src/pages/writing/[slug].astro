@@ -78,7 +78,7 @@ const { Content } = await render(post);
       }
     </header>
 
-    <div class="prose">
+    <div class="prose paper-sheet">
       <Content />
     </div>
 
@@ -132,12 +132,15 @@ const { Content } = await render(post);
     max-width: var(--post-measure);
   }
 
+  /* The sheet is wider than the header so the text column still lines up with it. */
+  .post > .prose {
+    max-width: calc(var(--post-measure) + 2 * var(--space-7));
+  }
+
   .post__header {
     display: grid;
     justify-items: start;
     gap: var(--space-4);
-    padding-bottom: var(--space-6);
-    border-bottom: var(--border);
   }
 
   .back {
@@ -152,8 +155,8 @@ const { Content } = await render(post);
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
-    border: var(--border-thin);
-    background: var(--color-surface);
+    background: var(--color-sticky);
+    box-shadow: var(--shadow-sm);
     color: var(--color-ink);
   }
 
@@ -185,8 +188,6 @@ const { Content } = await render(post);
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--space-4);
-    padding-top: var(--space-5);
-    border-top: var(--border);
   }
 
   /* ---- Long-form body ---- */
@@ -216,11 +217,14 @@ const { Content } = await render(post);
     color: var(--color-ink);
   }
 
+  /* A pull quote: a sticky note stuck on the sheet. */
   .prose :global(blockquote) {
     padding: var(--space-4) var(--space-5);
-    border: var(--border);
-    background: var(--color-surface);
+    background: var(--color-sticky);
     box-shadow: var(--shadow-sm);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
   }
 
   .prose :global(blockquote p) {
@@ -229,15 +233,14 @@ const { Content } = await render(post);
 
   .prose :global(:not(pre) > code) {
     padding: 0.1em 0.35em;
-    border: 1px solid var(--color-ink);
-    background: var(--color-surface);
+    border: 1px solid var(--color-grid);
+    background: var(--color-bg);
   }
 
   .prose :global(pre) {
     overflow-x: auto;
     padding: var(--space-4);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
+    border: var(--border-thin);
     font-size: var(--text-sm);
     line-height: 1.5;
   }
@@ -249,10 +252,13 @@ const { Content } = await render(post);
 
   .prose :global(hr) {
     border: 0;
-    border-top: var(--border);
+    border-top: var(--border-width-thin) dashed var(--color-ink-soft);
   }
 
+  /* Images are prints stuck to the sheet. */
   .prose :global(img) {
-    border: var(--border);
+    padding: 8px;
+    background: var(--color-white);
+    box-shadow: var(--shadow-rest);
   }
 </style>
