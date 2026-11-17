@@ -7,9 +7,14 @@ import { z } from 'astro/zod';
 
 const projects = defineCollection({
   loader: glob({ base: './src/content/projects', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
+  schema: ({ image }) =>
+    z.object({
     title: z.string(),
     summary: z.string(),
+    // Optional card/case-study image (path relative to the entry). Cards show no
+    // image area at all until one is added; never use a placeholder.
+    cover: image().optional(),
+    coverAlt: z.string().optional(),
     stack: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     order: z.number().default(100),

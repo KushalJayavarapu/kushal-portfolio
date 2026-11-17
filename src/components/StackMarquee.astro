@@ -1,29 +1,29 @@
 ---
 /**
- * Motion catalogue #6: a continuous ticker of tool tags in a bordered band.
+ * Motion catalogue #6: a continuous strip of tools, each on a piece of masking tape.
  * CSS only. The list is rendered twice so the loop is seamless; the second copy
  * is aria-hidden. Pauses on hover/focus and (via the reveal script in
  * BaseLayout) while offscreen. Under reduced motion it is a static wrapped list.
  */
-import Tag from './Tag.astro';
-
 interface Props {
   items: readonly string[];
+  /** Accessible name for the region. */
   label: string;
+  /** Small visible heading above the strip. */
+  heading: string;
 }
 
-const { items, label } = Astro.props;
+const { items, label, heading } = Astro.props;
 ---
 
 <section class="marquee" aria-label={label} data-marquee>
+  <p class="container marquee__label mono">{heading}</p>
   <div class="marquee__track">
     {
       [false, true].map((copy) => (
         <ul class="marquee__list" role="list" aria-hidden={copy ? 'true' : undefined}>
-          {items.map((item, i) => (
-            <li>
-              <Tag tone={i % 4 === 0 ? 'yellow' : 'cream'}>{item}</Tag>
-            </li>
+          {items.map((item) => (
+            <li class="mono">{item}</li>
           ))}
         </ul>
       ))
@@ -34,8 +34,13 @@ const { items, label } = Astro.props;
 <style>
   .marquee {
     overflow: hidden;
-    border-block: var(--border);
-    background: var(--color-surface);
+    padding-block: var(--space-2) var(--space-3);
+  }
+
+  .marquee__label {
+    margin-bottom: var(--space-2);
+    max-width: var(--container-max);
+    color: var(--color-ink-soft);
   }
 
   .marquee__track {
@@ -45,16 +50,31 @@ const { items, label } = Astro.props;
 
   .marquee__list {
     display: flex;
-    gap: var(--space-3);
+    gap: var(--space-4);
     margin: 0;
-    padding: var(--space-3) var(--space-3) var(--space-3) 0;
+    padding: var(--space-2) var(--space-4) var(--space-2) 0;
     list-style: none;
     white-space: nowrap;
   }
 
+  /* Each tool is a torn strip of masking tape, stuck on at a slight angle. */
+  .marquee__list li {
+    padding: 6px 14px;
+    background: var(--color-tape);
+    color: var(--color-ink);
+  }
+
+  .marquee__list li:nth-child(3n) {
+    transform: rotate(-1.5deg);
+  }
+
+  .marquee__list li:nth-child(3n + 1) {
+    transform: rotate(1deg);
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .marquee__track {
-      animation: marquee-slide 40s linear infinite;
+      animation: marquee-slide 48s linear infinite;
     }
 
     .marquee:hover .marquee__track,
@@ -71,7 +91,7 @@ const { items, label } = Astro.props;
     }
   }
 
-  /* Reduced motion: one static, wrapped, centred list. */
+  /* Reduced motion: one static, wrapped list. */
   @media (prefers-reduced-motion: reduce) {
     .marquee__track {
       width: auto;
@@ -79,7 +99,6 @@ const { items, label } = Astro.props;
 
     .marquee__list {
       flex-wrap: wrap;
-      justify-content: center;
       padding-inline: var(--container-pad);
     }
 

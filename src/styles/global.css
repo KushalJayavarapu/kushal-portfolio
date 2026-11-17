@@ -28,7 +28,12 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  /* Grid paper is the default page surface; .paper-* classes swap it per section. */
+  background-image:
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: var(--paper-grid) var(--paper-grid);
   color: var(--color-ink);
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -72,7 +77,7 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 400; /* Archivo Black is a single heavy weight */
+  font-weight: var(--font-weight-display);
   line-height: var(--leading-snug);
   letter-spacing: var(--tracking-display);
   text-wrap: balance;
@@ -124,6 +129,54 @@ samp {
   letter-spacing: var(--tracking-mono);
 }
 
+/* Handwritten margin notes. Decorative voice only: short, never essential copy. */
+.hand {
+  font-family: var(--font-hand);
+  font-size: 1.55rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-blue);
+}
+
+/* ---- Paper surfaces ----
+ * Full-bleed section backgrounds. Put the class on a <section> that spans the
+ * page and keep the content inside a .container.
+ */
+.paper-ruled {
+  background-color: var(--color-surface);
+  background-image: repeating-linear-gradient(
+    transparent 0 calc(var(--paper-rule) - 1px),
+    var(--color-rule) calc(var(--paper-rule) - 1px) var(--paper-rule)
+  );
+  border-block: 1px solid var(--color-grid);
+}
+
+.paper-blueprint {
+  background-color: var(--color-blueprint);
+  background-image:
+    linear-gradient(var(--color-blueprint-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px);
+  background-size: var(--paper-grid) var(--paper-grid);
+  color: var(--color-white);
+}
+
+.paper-blueprint :is(h1, h2, h3, p) {
+  color: inherit;
+}
+
+/* Masking tape: add .tape to any positioned element. */
+.tape::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 96px;
+  height: 26px;
+  background: var(--color-tape);
+  opacity: 0.92;
+  transform: translateX(-50%) rotate(-3deg);
+}
+
 /* ---- Accessibility ---- */
 :focus-visible {
   outline: 3px solid var(--color-focus);
@@ -153,7 +206,6 @@ samp {
   padding: var(--space-2) var(--space-4);
   background: var(--color-ink);
   color: var(--color-white);
-  border-radius: var(--radius-pill);
   transform: translateY(-200%);
 }
 
@@ -178,6 +230,8 @@ samp {
 .press {
   --_shadow: var(--shadow-rest);
   box-shadow: var(--_shadow);
+  /* --rest-tilt lets a taped note sit slightly crooked until it is picked up. */
+  transform: rotate(var(--rest-tilt, 0deg));
   transition: transform var(--dur-hover) var(--ease-snap);
 }
 
@@ -185,7 +239,7 @@ samp {
   .press:hover {
     --_shadow: var(--shadow-hover);
     /* --tilt is the sticker tilt (motion #7); 0 unless a component sets it. */
-    transform: translate(var(--lift), var(--lift)) rotate(var(--tilt, 0deg));
+    transform: translate(var(--lift-x, var(--lift)), var(--lift)) rotate(var(--tilt, 0deg));
   }
 
   /* Arrows inside a pressable element nudge forward on hover. */
@@ -203,6 +257,22 @@ samp {
   --_shadow: var(--shadow-pressed);
   transform: translate(var(--press), var(--press));
   transition-duration: var(--dur-press);
+}
+
+/* ---- Scribbles (motion catalogue #2) ----
+ * Hand-drawn SVG marks (see Scribble.astro) draw themselves in once when they
+ * scroll into view. Drawn at rest without JS or under reduced motion.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-draw] path {
+    stroke-dasharray: var(--len);
+    stroke-dashoffset: var(--len);
+    transition: stroke-dashoffset var(--dur-draw) var(--ease-out) 200ms;
+  }
+
+  .js [data-draw].is-in path {
+    stroke-dashoffset: 0;
+  }
 }
 
 /* ---- Scroll reveal (motion catalogue #5) ----

@@ -17,7 +17,12 @@ const year = new Date().getFullYear();
 <style>
   .site-footer {
     margin-top: var(--space-9);
-    border-top: var(--border);
+  }
+
+  /* A page that ends on a full-bleed band (the home page's contact band) runs
+     straight into the footer. */
+  :global(main:has(> .paper-blueprint:last-child)) + .site-footer {
+    margin-top: 0;
   }
 
   .site-footer__inner {
@@ -30,7 +35,7 @@ const year = new Date().getFullYear();
   }
 
   .site-footer p {
-    color: var(--color-ink);
+    color: var(--color-ink-soft);
   }
 
   .site-footer__links {

@@ -24,11 +24,21 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.local(),
-      name: 'Archivo Black',
+      name: 'Fraunces',
       cssVariable: '--font-display',
-      fallbacks: ['Arial Black', 'sans-serif'],
+      fallbacks: ['Georgia', 'serif'],
       options: {
-        variants: [{ src: [font('archivo-black-latin.woff2')], weight: 400, style: 'normal' }],
+        variants: [{ src: [font('fraunces-latin-var.woff2')], weight: '100 900', style: 'normal' }],
+      },
+    },
+    {
+      // Stand-in handwriting for margin notes until Kushal's own is traced to SVG.
+      provider: fontProviders.local(),
+      name: 'Caveat',
+      cssVariable: '--font-hand',
+      fallbacks: ['cursive'],
+      options: {
+        variants: [{ src: [font('caveat-latin-600.woff2')], weight: 600, style: 'normal' }],
       },
     },
     {

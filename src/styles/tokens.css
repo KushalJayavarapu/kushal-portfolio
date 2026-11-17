@@ -1,58 +1,76 @@
 /*
  * Design tokens: the single source of colour, type, spacing, shadow and motion
  * values. Components consume these variables; never hard-code hex values elsewhere.
- * Adapted from docs/design-reference.md; motion values from docs/motion-spec.md.
+ * The "field notebook" system in docs/design-reference.md; motion values from docs/motion-spec.md.
  *
- * Font families (--font-display, --font-body, --font-mono) are defined by Astro's
+ * Font families (--font-display, --font-body, --font-mono, --font-hand) are defined by Astro's
  * Fonts API (see astro.config.mjs) and emitted by <Font /> in BaseLayout.
  */
 
 :root {
-  /* ---- Colour: base ---- */
-  --color-bg: #f5efe0; /* cream page background */
-  --color-surface: #fffaf0; /* raised card surface */
-  --color-ink: #1a1a1a; /* primary text, borders, shadows */
-  --color-ink-muted: #4a4a4a; /* body copy (7.7:1 on bg) */
-  --color-ink-soft: #6b6b6b; /* captions, meta only (4.6:1 on bg) */
+  /* ---- Colour: paper and ink ("field notebook") ---- */
+  --color-bg: #f4efe4; /* notebook paper */
+  --color-surface: #fffdf8; /* a fresh sheet: notes, index cards */
+  --color-ink: #22252b; /* text (13.4:1 on paper) */
+  --color-ink-muted: #4f545d; /* body copy (6.6:1 on paper) */
+  --color-ink-soft: #636870; /* captions, meta only (4.9:1 on paper) */
   --color-white: #ffffff;
+  --color-grid: #e2dac7; /* grid-paper lines */
+  --color-rule: #cfd8e8; /* ruled-paper lines */
+  --color-margin: #e9a99b; /* ruled-paper margin line */
+  --color-tape: #e9dba9; /* masking tape (ink on it is 11:1) */
+  --color-sticky: #fff8d6; /* sticky note */
 
-  /* ---- Colour: accents ----
+  /* ---- Colour: pens ----
    * Contrast notes (WCAG AA):
-   *   white on coral is 3.1:1, so it is for large display text only (the <Highlight>).
-   *   ink on coral is 5.6:1 and is the choice for small text on coral.
-   *   white on blue 5.4:1, ink on yellow 10.2:1, ink on green 6.5:1, white on purple 5.7:1.
+   *   coral is a marker colour for strokes, shadows and large shapes only (ink on it is 4.0:1).
+   *   coral-ink is the same pen for small text (5.2:1 on paper).
+   *   coral-soft is the fill for coral tags/cards (ink on it is 7:1).
+   *   white on blue 7.3:1, white on blueprint 10.3:1, ink on yellow 10.6:1,
+   *   ink on green 8.6:1, white on purple 6.4:1.
    */
-  --color-coral: #ff5a3c;
-  --color-blue: #3355ff;
-  --color-yellow: #f0c040;
-  --color-green: #2fb36b;
-  --color-purple: #7c3aed;
+  --color-coral: #e2502f;
+  --color-coral-ink: #b23a1c;
+  --color-coral-soft: #f29a80;
+  --color-blue: #2747d0; /* blue marker */
+  --color-blueprint: #1f3a8a; /* blueprint band */
+  --color-blueprint-line: rgb(255 255 255 / 0.09);
+  --color-on-blueprint-soft: #c3ceff; /* labels on blueprint (6.7:1) */
+  --color-yellow: #f1d572;
+  --color-green: #8fd0a8;
+  --color-purple: #6d3fd1;
+  --color-shadow: rgb(34 37 43 / 0.12); /* soft paper shadow, still zero blur */
 
   /* Semantic aliases */
-  --color-primary: var(--color-blue);
-  --color-on-primary: var(--color-white);
+  --color-primary: var(--color-ink);
+  --color-on-primary: var(--color-surface);
   --color-highlight: var(--color-coral);
-  --color-on-highlight: var(--color-white);
+  --color-on-highlight: var(--color-ink);
   --color-focus: var(--color-blue);
 
   /* ---- Typography ---- */
   --font-weight-body: 400;
-  --font-weight-strong: 650;
+  --font-weight-strong: 600;
+  --font-weight-display: 600; /* Fraunces is variable; headlines sit at semibold */
 
   --text-xs: 0.75rem; /* mono chrome */
   --text-sm: 0.875rem;
   --text-base: 1.0625rem;
   --text-lg: 1.25rem;
   --text-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
-  --text-2xl: clamp(2rem, 1.5rem + 2.2vw, 3rem);
-  --text-display: clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem);
+  --text-2xl: clamp(1.9rem, 1.4rem + 1.8vw, 2.8rem);
+  --text-display: clamp(2.6rem, 1.5rem + 4.2vw, 4.9rem);
 
   --leading-tight: 1.02;
-  --leading-snug: 1.2;
+  --leading-snug: 1.15;
   --leading-body: 1.65;
 
   --tracking-display: -0.02em;
-  --tracking-mono: 0.08em;
+  --tracking-mono: 0.09em;
+
+  /* Paper geometry: grid squares and ruled lines share one rhythm. */
+  --paper-grid: 28px;
+  --paper-rule: 32px;
 
   /* ---- Spacing (4px base) ---- */
   --space-1: 0.25rem;
@@ -70,20 +88,22 @@
   --measure: 65ch;
 
   /* ---- Borders, radii ---- */
-  --border-width: 3px;
-  --border-width-thin: 2px;
+  --border-width: 2px;
+  --border-width-thin: 1.5px;
   --border: var(--border-width) solid var(--color-ink);
-  --border-thin: var(--border-width-thin) solid var(--color-ink);
-  --radius-card: 0; /* sharp corners on cards: deliberate */
-  --radius-pill: 999px; /* pill buttons: deliberate contrast */
+  --border-thin: var(--border-width-thin) solid var(--color-ink-soft);
+  --radius-card: 0; /* paper has square corners */
+  --radius-pill: 0; /* buttons are rubber-stamp rectangles now; name kept for existing uses */
 
-  /* ---- Hard offset shadows (zero blur, always) ---- */
-  --shadow-offset-rest: 6px;
-  --shadow-offset-hover: 8px;
-  --shadow-sm: 3px 3px 0 0 var(--color-ink);
-  --shadow-rest: var(--shadow-offset-rest) var(--shadow-offset-rest) 0 0 var(--color-ink);
-  --shadow-hover: var(--shadow-offset-hover) var(--shadow-offset-hover) 0 0 var(--color-ink);
-  --shadow-pressed: 0 0 0 0 var(--color-ink);
+  /* ---- Shadows (zero blur, always) ----
+   * Paper notes get a soft-coloured offset; buttons get a solid pen-coloured one.
+   */
+  --shadow-offset-rest: 3px;
+  --shadow-offset-hover: 5px;
+  --shadow-sm: 2px 2px 0 0 var(--color-shadow);
+  --shadow-rest: 2px 3px 0 0 var(--color-shadow);
+  --shadow-hover: 4px 10px 0 0 var(--color-shadow);
+  --shadow-pressed: 0 0 0 0 var(--color-shadow);
 
   /* ---- Motion (docs/motion-spec.md) ---- */
   --dur-press: 90ms;
@@ -97,6 +117,7 @@
   /* Press physics distances */
   --lift: -2px;
   --press: var(--shadow-offset-rest);
+  --dur-draw: 1100ms; /* scribbles drawing themselves in */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -106,6 +127,7 @@
     --dur-hover: 0ms;
     --dur-reveal: 0ms;
     --dur-hero: 0ms;
+    --dur-draw: 0ms;
     --stagger: 0ms;
   }
 }
