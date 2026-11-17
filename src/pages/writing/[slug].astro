@@ -5,7 +5,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Tag from '../../components/Tag.astro';
 import { WRITING } from '../../config/writing';
 import { ogImagePath } from '../../lib/og';
-import { formatDate, getPosts, readingMinutes, tagHref, type Post } from '../../lib/blog';
+import {
+  formatDate,
+  getPosts,
+  postTitleTransition,
+  readingMinutes,
+  tagHref,
+  type Post,
+} from '../../lib/blog';
 
 export const getStaticPaths = (async () => {
   const posts = await getPosts();
@@ -27,6 +34,9 @@ const { Content } = await render(post);
 >
   <link slot="head" rel="alternate" type="application/rss+xml" href={WRITING.feedPath} />
 
+  <!-- Motion #10: reading progress, driven by a CSS scroll timeline (no JS). -->
+  <div class="progress" aria-hidden="true"></div>
+
   <article class="container post">
     <header class="post__header">
       <a class="back mono" href="/writing/">← All writing</a>
@@ -38,7 +48,7 @@ const { Content } = await render(post);
           </p>
         )
       }
-      <h1 class="post__title">{title}</h1>
+      <h1 class="post__title" transition:name={postTitleTransition(post)}>{title}</h1>
       <p class="post__lede">{description}</p>
       <p class="post__meta mono">
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
@@ -80,6 +90,36 @@ const { Content } = await render(post);
 </BaseLayout>
 
 <style>
+  .progress {
+    display: none;
+  }
+
+  /* Only where scroll timelines exist; elsewhere the bar is simply absent. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .progress {
+        display: block;
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 50;
+        height: 5px;
+        background: var(--color-blue);
+        transform-origin: left center;
+        animation: progress-grow linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
+  }
+
+  @keyframes progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
   .post {
     --post-measure: 42rem;
     display: grid;

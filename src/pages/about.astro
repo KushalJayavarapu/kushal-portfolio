@@ -222,7 +222,7 @@ const activities = [
       <Tag tone="coral">Results</Tag>
       <h2 id="results-title">Notable <Highlight tone="ink">results</Highlight></h2>
     </header>
-    <ul class="grid" role="list">
+    <ul class="grid" role="list" data-reveal>
       {
         achievements.map((item) => (
           <li>
@@ -242,7 +242,7 @@ const activities = [
       <Tag tone="green">Skills</Tag>
       <h2 id="skills-title">What I <Highlight tone="ink">work with</Highlight></h2>
     </header>
-    <ul class="grid" role="list">
+    <ul class="grid" role="list" data-reveal>
       {
         skills.map(({ group, items }) => (
           <li>

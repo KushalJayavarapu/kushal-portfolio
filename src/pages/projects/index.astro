@@ -25,7 +25,7 @@ const more = projects.filter((p) => !p.data.featured);
 
   <section class="container group" aria-labelledby="featured-title">
     <h2 id="featured-title" class="group__title mono">Featured</h2>
-    <ul class="grid">
+    <ul class="grid" data-reveal>
       {
         featured.map((project) => (
           <li>
@@ -40,7 +40,7 @@ const more = projects.filter((p) => !p.data.featured);
     more.length > 0 && (
       <section class="container group" aria-labelledby="more-title">
         <h2 id="more-title" class="group__title mono">More projects</h2>
-        <ul class="grid">
+        <ul class="grid" data-reveal>
           {more.map((project) => (
             <li>
               <ProjectCard project={project} tone="cream" />

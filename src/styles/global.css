@@ -184,14 +184,94 @@ samp {
 @media (hover: hover) {
   .press:hover {
     --_shadow: var(--shadow-hover);
-    transform: translate(var(--lift), var(--lift));
+    /* --tilt is the sticker tilt (motion #7); 0 unless a component sets it. */
+    transform: translate(var(--lift), var(--lift)) rotate(var(--tilt, 0deg));
   }
+
+  /* Arrows inside a pressable element nudge forward on hover. */
+  .press:hover .arrow {
+    transform: translateX(4px);
+  }
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform var(--dur-hover) var(--ease-snap);
 }
 
 .press:active {
   --_shadow: var(--shadow-pressed);
   transform: translate(var(--press), var(--press));
   transition-duration: var(--dur-press);
+}
+
+/* ---- Scroll reveal (motion catalogue #5) ----
+ * Children of a [data-reveal] group slide up and fade in once, staggered, when
+ * they enter the viewport. The hidden state only exists once the inline script
+ * in BaseLayout has added `.js` to <html>, so without JS everything is visible.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] > * {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--dur-reveal) var(--ease-out),
+      transform var(--dur-reveal) var(--ease-out);
+    transition-delay: calc(var(--i, 0) * var(--stagger));
+  }
+
+  .js [data-reveal] > .is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Page transitions (motion catalogue #8) ----
+ * Native cross-document view transitions: no client router, no JS. Elements that
+ * share a `transition:name` (card title and page heading) morph between pages;
+ * the header holds still and the rest of the page does a short snap. Browsers
+ * without support just navigate normally.
+ */
+@view-transition {
+  navigation: auto;
+}
+
+.site-header {
+  view-transition-name: site-header;
+}
+
+::view-transition-old(root) {
+  animation: vt-out var(--dur-hover) var(--ease-snap) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in var(--dur-reveal) var(--ease-out) both;
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--dur-reveal);
+  animation-timing-function: var(--ease-out);
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 
 /* ---- Global reduced-motion safety net ----
