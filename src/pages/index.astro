@@ -1,9 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Highlight from '../components/Highlight.astro';
+import Scribble from '../components/Scribble.astro';
 import Button from '../components/Button.astro';
 import Card from '../components/Card.astro';
-import Tag from '../components/Tag.astro';
 import EmailReveal from '../components/EmailReveal.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import TypingLine from '../components/TypingLine.astro';
@@ -49,10 +51,18 @@ const stack = [
   'C++',
 ];
 
+// The hero portrait is optional: drop `kushal.jpg` (or .jpeg/.png/.webp) into
+// src/assets/photos/ and it appears as a taped print. No placeholder otherwise.
+const portraits = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/photos/kushal.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+const portrait = Object.values(portraits)[0]?.default;
+
 const facts = [
-  { label: 'Studying', value: 'B.Tech in Computer Science & Engineering, PES University (2024 - 2028)' },
-  { label: 'Research', value: 'AdaptBank, an evaluation framework for how LLM agents behave when their environment changes' },
-  { label: 'Writing', value: 'The Footnote, a weekly AI explainer series on LinkedIn' },
+  { label: 'Studying', value: 'B.Tech CSE, PES University, 2024 to 2028' },
+  { label: 'Research', value: 'AdaptBank, agent robustness under drift' },
+  { label: 'Writing', value: 'The Footnote, weekly on LinkedIn' },
   { label: 'Looking for', value: 'Forward-deployed engineering roles' },
 ];
 ---
@@ -60,45 +70,72 @@ const facts = [
 <BaseLayout>
   <section class="container hero" aria-labelledby="hero-title">
     <div class="hero__copy">
-      <div class="rise" style="--i: 0"><Tag>Bengaluru, India</Tag></div>
+      <p class="mono hero__eyebrow rise" style="--i: 0">CS student · PES University, Bengaluru</p>
       <h1 id="hero-title" class="rise" style="--i: 1">
-        Kushal <Highlight>Jayavarapu</Highlight>
+        I build AI systems that <Highlight>hold up</Highlight> under change.
       </h1>
-      <TypingLine class="hero__typing rise" subject="Kushal" phrases={typingPhrases} />
+      <TypingLine
+        class="hero__typing rise"
+        label="currently"
+        subject="Kushal"
+        phrases={typingPhrases}
+      />
       <p class="hero__lede rise" style="--i: 3">{SITE.description}</p>
       <div class="actions rise" style="--i: 4">
-        <Button href="/projects/">See my projects</Button>
+        <Button href="/projects/">See my projects <span class="arrow">&rarr;</span></Button>
         <Button href="/contact/" variant="secondary">Get in touch</Button>
       </div>
     </div>
 
-    <div class="rise" style="--i: 5">
-    <Card as="div" class="hero__facts">
-      <Tag tone="ink">At a glance</Tag>
-      <dl>
-        {
-          facts.map(({ label, value }) => (
-            <div>
-              <dt class="mono">{label}</dt>
-              <dd>{value}</dd>
+    <div class="hero__side rise" style="--i: 5">
+      {
+        portrait && (
+          <figure class="photo">
+            <div class="photo__frame tape">
+              <Image
+                src={portrait}
+                alt={`Portrait of ${SITE.name}`}
+                widths={[360, 720]}
+                sizes="(min-width: 60rem) 22rem, 80vw"
+                loading="eager"
+              />
+              <figcaption class="hand">Bengaluru, 2026</figcaption>
             </div>
-          ))
-        }
-      </dl>
-    </Card>
+            <span class="photo__note hand" aria-hidden="true">
+              that's me!
+              <Scribble shape="arrow-right" tone="blue" />
+            </span>
+          </figure>
+        )
+      }
+      <div class="index-card">
+        <p class="mono index-card__title">At a glance</p>
+        <dl>
+          {
+            facts.map(({ label, value }) => (
+              <div>
+                <dt class="mono">{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
     </div>
   </section>
 
-  <StackMarquee items={stack} label="Tools I work with" />
+  <StackMarquee items={stack} label="Tools I work with" heading="On my desk" />
 
   {
     featured.length > 0 && (
       <section class="container section" aria-labelledby="projects-title">
         <header class="section__head">
-          <Tag tone="yellow">Selected work</Tag>
-          <h2 id="projects-title">
-            Featured <Highlight tone="ink">projects</Highlight>
-          </h2>
+          <p class="mono eyebrow">Selected work</p>
+          <h2 id="projects-title">Things I've built</h2>
+          <span class="start-here hand" aria-hidden="true">
+            start here
+            <Scribble shape="arrow-down" tone="blue" />
+          </span>
         </header>
         <ul class="grid" role="list" data-reveal>
           {featured.map((project) => (
@@ -107,30 +144,40 @@ const facts = [
             </li>
           ))}
         </ul>
-        <Button href="/projects/" variant="secondary">All projects</Button>
+        <Button href="/projects/" variant="secondary">
+          All projects <span class="arrow">&rarr;</span>
+        </Button>
       </section>
     )
   }
 
-  <section class="container section about" aria-labelledby="about-title">
-    <header class="section__head">
-      <Tag tone="green">About</Tag>
-      <h2 id="about-title">A bit <Highlight tone="ink">about me</Highlight></h2>
-    </header>
-    <div class="about__body">
-      <p>
-        I'm a Computer Science undergraduate at PES University in Bengaluru, building AI and data
-        products. I did summer research at PES University's Center for Cloud Computing and Big Data,
-        and I work on benchmarks for how LLM agents hold up when their environment changes.
-      </p>
-      <Button href="/about/" variant="secondary">More about me</Button>
+  <section class="paper-ruled about" aria-labelledby="about-title">
+    <div class="container about__inner">
+      <header class="section__head">
+        <p class="mono eyebrow">About</p>
+        <h2 id="about-title">A bit about me</h2>
+      </header>
+      <div class="about__body">
+        <p>
+          I'm a Computer Science undergraduate at PES University in Bengaluru, building AI and data
+          products. I did summer research at PES University's Center for Cloud Computing and Big
+          Data, and I work on benchmarks for how LLM agents hold up when their environment changes.
+        </p>
+        <p>
+          Outside coursework I build hackathon projects, lead club operations, and write a weekly AI
+          explainer series.
+        </p>
+        <Button href="/about/" variant="secondary">
+          More about me <span class="arrow">&rarr;</span>
+        </Button>
+      </div>
     </div>
   </section>
 
   <section class="container section" aria-labelledby="writing-title">
     <header class="section__head">
-      <Tag tone="blue">Writing</Tag>
-      <h2 id="writing-title">Latest <Highlight tone="ink">writing</Highlight></h2>
+      <p class="mono eyebrow">Writing</p>
+      <h2 id="writing-title">I explain AI in plain words</h2>
     </header>
     <ul class="grid" role="list" data-reveal>
       {
@@ -138,17 +185,21 @@ const facts = [
       }
       <li>
         <Card href={SOCIAL.linkedin} tone="yellow" class="post">
-          <span class="mono">Every Tuesday on LinkedIn</span>
+          <span class="mono post__when">Every Tuesday on LinkedIn</span>
           <h3>The Footnote</h3>
           <p>A weekly series that explains AI in plain words, with minimal jargon.</p>
+          <span class="mono post__cta" aria-hidden="true">
+            Follow on LinkedIn <span class="arrow">&rarr;</span>
+          </span>
         </Card>
       </li>
     </ul>
   </section>
 
-  <section id="contact" class="container section" aria-labelledby="contact-title">
-    <Card as="div" tone="blue" class="cta">
-      <h2 id="contact-title">Get in touch</h2>
+  <section id="contact" class="paper-blueprint cta" aria-labelledby="contact-title">
+    <div class="container cta__inner">
+      <p class="mono cta__eyebrow">Contact</p>
+      <h2 id="contact-title">Let's talk.</h2>
       <p>
         I'm aiming for forward-deployed engineering roles, with a side interest in finance and data
         analytics.
@@ -158,7 +209,7 @@ const facts = [
         <Button href={SOCIAL.linkedin} variant="inverse" rel="me">LinkedIn</Button>
         <Button href={SOCIAL.github} variant="inverse" rel="me">GitHub</Button>
       </div>
-    </Card>
+    </div>
   </section>
 </BaseLayout>
 
@@ -168,12 +219,12 @@ const facts = [
     display: grid;
     gap: var(--space-7);
     align-items: center;
-    padding-block: var(--space-8) var(--space-7);
+    padding-block: var(--space-6) var(--space-8);
   }
 
   @media (min-width: 60rem) {
     .hero {
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
     }
   }
 
@@ -183,36 +234,146 @@ const facts = [
     gap: var(--space-5);
   }
 
+  .hero h1 {
+    font-size: clamp(2.5rem, 1.5rem + 3.6vw, 4.4rem);
+  }
+
+  .hero__eyebrow,
+  .eyebrow {
+    color: var(--color-ink-soft);
+    max-width: none;
+  }
+
   .hero :global(.hero__typing) {
     --i: 2;
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-strong);
-    color: var(--color-ink);
   }
 
   .hero__lede {
     font-size: var(--text-lg);
   }
 
-  .hero :global(.hero__facts) {
+  .hero__side {
     display: grid;
-    justify-items: start;
-    gap: var(--space-4);
+    gap: var(--space-6);
+    justify-items: center;
   }
 
-  .hero dl {
-    display: grid;
-    gap: var(--space-4);
+  /* The portrait: a print with a white border, taped on at an angle. */
+  .photo {
+    position: relative;
+    width: min(100%, 22rem);
   }
 
-  .hero dt {
+  .photo__frame {
+    position: relative;
+    padding: 12px 12px var(--space-2);
+    background: var(--color-white);
+    box-shadow: var(--shadow-rest);
+    transform: rotate(2.2deg);
+  }
+
+  .photo__frame.tape::before {
+    width: 120px;
+    top: -14px;
+  }
+
+  .photo__frame :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .photo figcaption {
+    padding-top: var(--space-2);
+    text-align: center;
+    font-size: 1.4rem;
+    color: var(--color-ink-muted);
+  }
+
+  .photo__note {
+    display: none;
+    position: absolute;
+    left: -7.5rem;
+    top: 44%;
+    transform: rotate(-7deg);
+  }
+
+  .photo__note :global(svg) {
+    display: block;
+    width: 92px;
+    height: 44px;
+    margin: 2px 0 0 34px;
+  }
+
+  /* Only where there is clear margin beside the print, so it never crosses the headline. */
+  @media (min-width: 86rem) {
+    .photo__note {
+      display: block;
+    }
+  }
+
+  /* "At a glance" as a ruled index card with a red header line. */
+  .index-card {
+    --line: 28px;
+    width: 100%;
+    padding: 10px var(--space-5) var(--space-5);
+    background-color: var(--color-surface);
+    background-image:
+      linear-gradient(
+        transparent 39px,
+        var(--color-margin) 39px,
+        var(--color-margin) 41px,
+        transparent 41px
+      ),
+      repeating-linear-gradient(
+        transparent 0 calc(var(--line) - 1px),
+        var(--color-rule) calc(var(--line) - 1px) var(--line)
+      );
+    background-position:
+      0 0,
+      0 41px;
+    background-repeat: no-repeat, repeat;
+    background-size:
+      100% 100%,
+      100% calc(100% - 41px);
+    box-shadow: var(--shadow-rest);
+    transform: rotate(-1.4deg);
+  }
+
+  .index-card__title {
+    height: 31px;
+    line-height: 31px;
+    color: var(--color-coral-ink);
+  }
+
+  .index-card dl {
+    margin-top: 6px;
+  }
+
+  .index-card dl > div {
+    display: grid;
+    grid-template-columns: 7.5em 1fr;
+    gap: var(--space-3);
+    line-height: var(--line);
+  }
+
+  .index-card dt {
     color: var(--color-ink-soft);
+    line-height: inherit;
   }
 
-  .hero dd {
+  .index-card dd {
     margin: 0;
-    font-weight: var(--font-weight-strong);
-    line-height: var(--leading-snug);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 32rem) {
+    .index-card dl > div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
   }
 
   /*
@@ -239,13 +400,36 @@ const facts = [
     display: grid;
     justify-items: start;
     gap: var(--space-6);
-    padding-block: var(--space-8) 0;
+    padding-block: var(--space-8);
   }
 
   .section__head {
+    position: relative;
     display: grid;
     justify-items: start;
-    gap: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .start-here {
+    display: none;
+    position: absolute;
+    left: calc(100% + var(--space-7));
+    top: 0;
+    white-space: nowrap;
+    transform: rotate(4deg);
+  }
+
+  .start-here :global(svg) {
+    display: block;
+    width: 70px;
+    height: 46px;
+    margin: 4px 0 0 18px;
+  }
+
+  @media (min-width: 60rem) {
+    .start-here {
+      display: block;
+    }
   }
 
   .actions {
@@ -274,27 +458,54 @@ const facts = [
     gap: var(--space-3);
   }
 
-  /* ---- About teaser ---- */
+  .post__when {
+    color: var(--color-coral-ink);
+  }
+
+  /* ---- About teaser, on ruled paper ---- */
+  .about__inner {
+    display: grid;
+    align-items: start;
+    gap: var(--space-6);
+    padding-block: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .about__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    }
+  }
+
   .about__body {
     display: grid;
     justify-items: start;
     gap: var(--space-5);
   }
 
+  /* Text sits on the ruled lines. */
   .about__body p {
     font-size: var(--text-lg);
+    line-height: var(--paper-rule);
+    color: var(--color-ink);
   }
 
-  /* ---- Contact banner ---- */
-  .section :global(.cta) {
+  /* ---- Contact, blueprint band ---- */
+  .cta__inner {
     display: grid;
     justify-items: start;
-    gap: var(--space-4);
-    width: 100%;
-    padding: var(--space-7) var(--space-6);
+    gap: var(--space-5);
+    padding-block: var(--space-9);
   }
 
   .cta h2 {
-    color: var(--color-white);
+    font-size: var(--text-display);
+  }
+
+  .cta__inner > p:not(.mono) {
+    font-size: var(--text-lg);
+  }
+
+  .cta__eyebrow {
+    color: var(--color-on-blueprint-soft);
   }
 </style>

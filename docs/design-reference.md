@@ -1,4 +1,42 @@
-# Frontend Reference — "Attest" Landing Page Design
+# Design reference
+
+## Current system: field notebook (adopted 2026-11-17)
+
+Kushal chose this direction over the earlier neo-brutalist system. The site should feel like a
+researcher's annotated notebook: warm, curious, hand-made, and still fast and legible.
+Inspirations he picked: johnnyharris.ch, homsweethom.com, arlenmccluskey.com, anthonydesigner.com.
+
+**Surfaces.** The page is cream grid paper (`body`). Full-bleed sections can switch paper:
+`.paper-ruled` (ruled sheet, for prose) and `.paper-blueprint` (blue grid band, for the contact
+call to action). Cards are loose sheets: no border, soft zero-blur offset shadow, optionally held
+on with masking tape (`.tape`), sitting a degree or so crooked and straightening when hovered.
+
+**Ink and pens.** Ink for text. Coral marker for emphasis strokes and button shadows
+(`--color-coral`; use `--color-coral-ink` for small coral text). Blue marker for handwritten notes
+and focus rings. Tape yellow and sticky-note yellow for small surfaces. All values and their
+contrast notes live in `src/styles/tokens.css`.
+
+**Type.** Fraunces (serif, semibold) for headlines, Inter for body, JetBrains Mono for UI chrome,
+and a handwriting face (`.hand`, currently Caveat as a stand-in) for short decorative margin notes.
+
+**Emphasis.** `<Highlight>` underlines a phrase with a coral marker stroke. `<Scribble>` draws
+arrows and underlines; marks draw themselves in on scroll. Limit: two or three scribbles and
+handwritten notes per page, or it turns twee. Handwritten notes are decorative (`aria-hidden`)
+and never carry information that is not also in real text.
+
+**Buttons** are rubber-stamp rectangles with a solid offset shadow and the press physics from the
+motion spec. **Tags** are thin outlined mono labels. A project status can be a rotated stamp.
+
+**Photos.** The hero portrait is a white-bordered print taped on at an angle. Photos and project
+covers are optional: when the file is missing the layout closes up, with no placeholder.
+
+**Still to come:** Projects index and case-study layouts with images, About with candid photos,
+social preview images redrawn in this style, and Kushal's own handwriting traced into the scribbles.
+
+---
+
+## Superseded: neo-brutalist reference (history only, do not build from this)
+
 
 *Describes three screenshots of a reference landing page, for use as a build spec with Claude Code.*
 

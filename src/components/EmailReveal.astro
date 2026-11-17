@@ -52,20 +52,50 @@ const encoded = btoa([...`${USER}@${DOMAIN}`].reverse().join(''));
 
   /* Button.astro's styles are scoped to that component, so the reveal mirrors them. */
   .btn {
+    /* Rubber-stamp rectangle with a solid pen-coloured offset shadow. */
+    --shadow-rest: var(--shadow-offset-rest) var(--shadow-offset-rest) 0 0 var(--_sh);
+    --shadow-hover: var(--shadow-offset-hover) var(--shadow-offset-hover) 0 0 var(--_sh);
+    --shadow-pressed: 0 0 0 0 var(--_sh);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 2.75rem;
+    min-height: 2.875rem; /* 46px touch target */
     padding: var(--space-3) var(--space-5);
-    border: var(--border);
+    border: var(--border-width) solid var(--_bd, var(--color-ink));
     border-radius: var(--radius-pill);
-    font-size: var(--text-sm);
-    font-weight: 700;
+    font-size: var(--text-xs);
+    font-weight: 600;
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
     background: var(--_bg);
     color: var(--_fg);
+  }
+
+  .btn--primary {
+    --_bg: var(--color-primary);
+    --_fg: var(--color-on-primary);
+    --_sh: var(--color-coral);
+  }
+
+  .btn--secondary {
+    --_bg: var(--color-bg);
+    --_fg: var(--color-ink);
+    --_sh: var(--color-ink);
+  }
+
+  .btn--accent {
+    --_bg: var(--color-white);
+    --_fg: var(--color-blueprint);
+    --_bd: var(--color-white);
+    --_sh: var(--color-coral);
+  }
+
+  .btn--inverse {
+    --_bg: transparent;
+    --_fg: var(--color-white);
+    --_bd: var(--color-white);
+    --_sh: rgb(255 255 255 / 0.35);
   }
 
   .email-reveal__link {
@@ -75,27 +105,6 @@ const encoded = btoa([...`${USER}@${DOMAIN}`].reverse().join(''));
 
   .btn[hidden] {
     display: none;
-  }
-
-  .btn--primary {
-    --_bg: var(--color-primary);
-    --_fg: var(--color-on-primary);
-  }
-
-  .btn--secondary {
-    --_bg: transparent;
-    --_fg: var(--color-ink);
-  }
-
-  .btn--accent {
-    --_bg: var(--color-yellow);
-    --_fg: var(--color-ink);
-  }
-
-  .btn--inverse {
-    --_bg: transparent;
-    --_fg: var(--color-white);
-    border-color: var(--color-white);
   }
 
   .email-reveal__fallback {

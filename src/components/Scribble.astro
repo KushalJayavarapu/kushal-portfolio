@@ -1,0 +1,88 @@
+---
+/**
+ * A hand-drawn SVG mark: marker underline, arrow or circle. Decorative only
+ * (aria-hidden). With JS and motion allowed it draws itself in when it scrolls
+ * into view (`data-draw`, see global.css and the script in BaseLayout);
+ * otherwise it is simply there.
+ *
+ * Paths are placeholders drawn by hand in code. When Kushal's own marker
+ * strokes are traced, swap the `d` values here and every page updates.
+ */
+type Shape = 'underline' | 'underline-thin' | 'arrow-right' | 'arrow-down';
+
+interface Props {
+  shape: Shape;
+  tone?: 'coral' | 'blue' | 'yellow';
+  class?: string;
+}
+
+const SHAPES: Record<Shape, { box: string; d: string; len: number; width: number; stretch: boolean }> = {
+  underline: {
+    box: '0 0 200 22',
+    d: 'M3 14 C 40 4, 92 20, 132 10 S 188 5, 197 13',
+    len: 240,
+    width: 6,
+    stretch: true,
+  },
+  'underline-thin': {
+    box: '0 0 200 10',
+    d: 'M2 6 C 50 2, 120 9, 198 4',
+    len: 210,
+    width: 3.5,
+    stretch: true,
+  },
+  'arrow-right': {
+    box: '0 0 92 44',
+    d: 'M4 6 C 28 8, 56 18, 84 34 M 70 36 L 85 35 L 80 22',
+    len: 140,
+    width: 3,
+    stretch: false,
+  },
+  'arrow-down': {
+    box: '0 0 70 46',
+    d: 'M6 4 C 4 22, 22 36, 56 40 M 44 30 L 57 40 L 44 46',
+    len: 110,
+    width: 3,
+    stretch: false,
+  },
+};
+
+const { shape, tone = 'coral', class: className } = Astro.props;
+const s = SHAPES[shape];
+---
+
+<svg
+  class:list={['scribble', `scribble--${tone}`, className]}
+  viewBox={s.box}
+  preserveAspectRatio={s.stretch ? 'none' : undefined}
+  aria-hidden="true"
+  focusable="false"
+  data-draw
+>
+  <path d={s.d} style={`--len:${s.len}`} stroke-width={s.width}></path>
+</svg>
+
+<style>
+  .scribble {
+    overflow: visible;
+  }
+
+  .scribble path {
+    fill: none;
+    stroke: var(--_pen);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .scribble--coral {
+    --_pen: var(--color-coral);
+  }
+
+  .scribble--blue {
+    --_pen: var(--color-blue);
+  }
+
+  .scribble--yellow {
+    --_pen: var(--color-yellow);
+  }
+</style>

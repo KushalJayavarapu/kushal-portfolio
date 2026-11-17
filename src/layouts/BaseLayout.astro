@@ -16,12 +16,13 @@ type Props = SeoProps;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <Seo {...Astro.props} />
-    <meta name="theme-color" content="#f5efe0" />
+    <meta name="theme-color" content="#f4efe4" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="generator" content={Astro.generator} />
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-body" preload />
     <Font cssVariable="--font-mono" />
+    <Font cssVariable="--font-hand" />
     <!-- Flags JS before first paint so scroll-reveal's hidden state never flashes. -->
     <script is:inline>
       document.documentElement.classList.add('js');
@@ -35,7 +36,7 @@ type Props = SeoProps;
       <slot />
     </main>
     <Footer />
-    <!-- Motion #5 scroll reveal and #6 marquee offscreen pause. Enhancement only. -->
+    <!-- Motion #5 scroll reveal, #2 scribble draw-in and #6 marquee offscreen pause. Enhancement only. -->
     <script is:inline>
       (() => {
         const items = [];
@@ -45,6 +46,7 @@ type Props = SeoProps;
             items.push(el);
           });
         });
+        document.querySelectorAll('[data-draw]').forEach((el) => items.push(el));
         const marquees = document.querySelectorAll('[data-marquee]');
         if (!('IntersectionObserver' in window)) {
           items.forEach((el) => el.classList.add('is-in'));

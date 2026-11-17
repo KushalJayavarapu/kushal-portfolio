@@ -63,7 +63,7 @@ const tags = collectTags(posts);
   <section class="container posts" aria-labelledby="posts-title">
     <div class="posts__head">
       <h2 id="posts-title">Posts</h2>
-      <Button href={WRITING.feedPath} variant="secondary">RSS feed</Button>
+      <Button href={WRITING.feedPath} variant="secondary">Blog feed</Button>
     </div>
     <TagFilter tags={tags} />
     {
@@ -75,7 +75,7 @@ const tags = collectTags(posts);
         </ul>
       ) : (
         <Card tone="cream" as="div" class="posts__empty">
-          <p>No posts yet. Subscribe to the RSS feed to get the first one.</p>
+          <p>No posts yet. Subscribe to the blog feed to get the first one.</p>
         </Card>
       )
     }

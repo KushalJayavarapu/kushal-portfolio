@@ -13,11 +13,13 @@
 interface Props {
   /** Subject that stays put in front of the typed phrase, e.g. "Kushal". */
   subject: string;
+  /** Short mono label in front, like a log line, e.g. "currently". */
+  label?: string;
   phrases: readonly string[];
   class?: string;
 }
 
-const { subject, phrases, class: className } = Astro.props;
+const { subject, label, phrases, class: className } = Astro.props;
 const first = phrases[0] ?? '';
 const longest = phrases.reduce((a, b) => (b.length > a.length ? b : a), '');
 ---
@@ -25,9 +27,9 @@ const longest = phrases.reduce((a, b) => (b.length > a.length ? b : a), '');
 <p class:list={['typing', className]} data-typing data-phrases={JSON.stringify(phrases)}>
   <span class="visually-hidden">{subject} {first}</span>
   <span class="typing__stack" aria-hidden="true">
-    <span class="typing__sizer">{subject} {longest}</span>
+    <span class="typing__sizer">{label && `${label}: `}{subject} {longest}</span>
     <span class="typing__line"
-      >{subject} <span class="typing__text" data-typing-text>{first}</span><span
+      >{label && <span class="typing__label">{label}: </span>}{subject} <span class="typing__text" data-typing-text>{first}</span><span
         class="typing__cursor"
         data-typing-cursor></span></span
     >
@@ -35,8 +37,20 @@ const longest = phrases.reduce((a, b) => (b.length > a.length ? b : a), '');
 </p>
 
 <style>
+  .typing {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink-muted);
+  }
+
   .typing__stack {
     display: inline-grid;
+  }
+
+  .typing__label {
+    font-weight: 600;
+    color: var(--color-coral-ink);
   }
 
   /* Both copies share one cell; the invisible longest phrase sets the height. */
@@ -51,10 +65,10 @@ const longest = phrases.reduce((a, b) => (b.length > a.length ? b : a), '');
 
   .typing__cursor {
     display: inline-block;
-    width: 0.09em;
-    height: 1em;
-    margin-left: 0.08em;
-    vertical-align: -0.12em;
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 0.1em;
+    vertical-align: -0.18em;
     background: var(--color-blue);
     /* Static until the script takes over; a cursor on a static line looks broken. */
     visibility: hidden;

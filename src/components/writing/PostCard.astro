@@ -56,6 +56,10 @@ const { title, description, pubDate, tags, draft } = post.data;
     height: 100%;
   }
 
+  .post-card:nth-child(even) :global(.card) {
+    --rest-tilt: 0.7deg;
+  }
+
   .post-card__meta {
     display: flex;
     flex-wrap: wrap;
