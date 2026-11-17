@@ -1,0 +1,158 @@
+---
+/**
+ * The Contact section that closes the single page: a blueprint band holding a
+ * postcard. The message side has the email, the address side LinkedIn and GitHub.
+ * Facts from docs/content-brief.md. The email never appears in the HTML source:
+ * EmailReveal decodes it on click. No phone number, by the brief's rules.
+ */
+import Button from '../Button.astro';
+import EmailReveal from '../EmailReveal.astro';
+import { SOCIAL } from '../../config/site';
+---
+
+<section id="contact" class="paper-blueprint cta" aria-labelledby="contact-title">
+  <div class="container cta__inner">
+    <p class="mono cta__eyebrow">Contact</p>
+    <h2 id="contact-title">Let's talk.</h2>
+    <p class="cta__lede">
+      I'm aiming for forward-deployed engineering roles, with a side interest in finance and data
+      analytics. I'm based in Bengaluru, India.
+    </p>
+
+    <div class="postcard">
+      <section class="postcard__side postcard__message" aria-labelledby="email-title">
+        <p class="mono postcard__label">Email</p>
+        <h3 id="email-title">Write to me</h3>
+        <EmailReveal />
+      </section>
+      <div class="postcard__side postcard__address">
+        <span class="postcard__stamp mono" aria-hidden="true">Bengaluru<br />India</span>
+        <section class="postcard__line" aria-labelledby="linkedin-title">
+          <p class="mono postcard__label">LinkedIn</p>
+          <h3 id="linkedin-title">Connect</h3>
+          <p>I also post The Footnote there, a weekly AI series, every Tuesday.</p>
+          <Button href={SOCIAL.linkedin} variant="secondary" rel="me">
+            Open LinkedIn <span class="arrow">&rarr;</span>
+          </Button>
+        </section>
+        <section class="postcard__line" aria-labelledby="github-title">
+          <p class="mono postcard__label">GitHub</p>
+          <h3 id="github-title">See the code</h3>
+          <Button href={SOCIAL.github} variant="secondary" rel="me">
+            Open GitHub <span class="arrow">&rarr;</span>
+          </Button>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta__inner {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-9);
+  }
+
+  .cta h2 {
+    font-size: var(--text-display);
+  }
+
+  .cta__lede {
+    font-size: var(--text-lg);
+  }
+
+  .cta__eyebrow {
+    color: var(--color-on-blueprint-soft);
+  }
+
+  /* The band sets white text; the postcard is paper again. */
+  .postcard p:not(.mono) {
+    color: var(--color-ink-muted);
+  }
+
+  .postcard {
+    display: grid;
+    width: 100%;
+    max-width: 60rem;
+    margin-top: var(--space-4);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-rest);
+    rotate: -0.4deg;
+  }
+
+  .postcard__side {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .postcard__address {
+    position: relative;
+    gap: var(--space-5);
+    border-top: var(--border-width-thin) dashed var(--color-ink-soft);
+  }
+
+  @media (min-width: 48rem) {
+    .postcard {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .postcard__side {
+      padding: var(--space-7) var(--space-6);
+    }
+
+    .postcard__address {
+      border-top: 0;
+      border-left: var(--border-width-thin) dashed var(--color-ink-soft);
+    }
+  }
+
+  .postcard__label {
+    color: var(--color-coral-ink);
+  }
+
+  .postcard h3 {
+    font-size: var(--text-xl);
+  }
+
+  /* Address lines: each channel sits on its own ruled line. */
+  .postcard__line {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
+    width: 100%;
+    padding-bottom: var(--space-5);
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .postcard__line:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  /* The stamp box in the corner; leave room for it beside the first heading. */
+  .postcard__stamp {
+    position: absolute;
+    top: var(--space-5);
+    right: var(--space-5);
+    display: grid;
+    place-items: center;
+    width: 5.25rem;
+    height: 6rem;
+    border: var(--border-width-thin) dashed var(--color-coral-ink);
+    color: var(--color-coral-ink);
+    font-size: 0.625rem;
+    line-height: 1.5;
+    text-align: center;
+    rotate: 3deg;
+  }
+
+  .postcard__line:first-of-type {
+    padding-right: 6rem;
+  }
+</style>

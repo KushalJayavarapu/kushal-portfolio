@@ -11,14 +11,16 @@ export const SITE = {
 export interface NavItem {
   label: string;
   href: string;
+  section: string;
 }
 
-// Routes are built by the page threads (T2 Home/About, T3 Projects, T4 Writing).
+// The site is one page: each item jumps to a section of the home page.
+// `section` is that section's id (the header uses it to mark where you are).
 export const NAV: NavItem[] = [
-  { label: 'Projects', href: '/projects/' },
-  { label: 'Writing', href: '/writing/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Contact', href: '/contact/' },
+  { label: 'Projects', href: '/#projects', section: 'projects' },
+  { label: 'About', href: '/#about', section: 'about' },
+  { label: 'Writing', href: '/#writing', section: 'writing' },
+  { label: 'Contact', href: '/#contact', section: 'contact' },
 ];
 
 // Email is intentionally absent: the brief forbids a plain-text mailto in the

@@ -3,7 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Highlight from '../../components/Highlight.astro';
 import Button from '../../components/Button.astro';
 import Card from '../../components/Card.astro';
-import Tag from '../../components/Tag.astro';
 import PostCard from '../../components/writing/PostCard.astro';
 import TagFilter from '../../components/writing/TagFilter.astro';
 import { FOOTNOTE, WRITING } from '../../config/writing';
@@ -23,16 +22,17 @@ const tags = collectTags(posts);
   />
 
   <section class="container intro">
-    <Tag>Writing</Tag>
-    <h1>About AI, in plain <Highlight>words</Highlight></h1>
+    <p class="mono eyebrow">Writing</p>
+    <h1>About AI, in plain <Highlight>words</Highlight>.</h1>
     <p class="intro__lede">
       Longer notes live here. The weekly series lives on LinkedIn.
     </p>
   </section>
 
-  <section class="container" aria-labelledby="footnote-title">
-    <Card tone="yellow" as="section" class="footnote">
-      <Tag tone="ink">Weekly · Tuesdays</Tag>
+  <div class="container layout">
+    <aside class="footnote-slot" aria-labelledby="footnote-title">
+      <Card tone="yellow" tape as="div" class="footnote">
+      <p class="mono footnote__when">Weekly · Tuesdays</p>
       <h2 id="footnote-title">{FOOTNOTE.name}</h2>
       <p>{FOOTNOTE.blurb}</p>
       {
@@ -55,31 +55,33 @@ const tags = collectTags(posts);
         )
       }
       <Button href={FOOTNOTE.followHref} variant="secondary" rel="noopener">
-        Follow on LinkedIn <span class="visually-hidden">(opens LinkedIn)</span>
+        Follow on LinkedIn <span class="arrow">&rarr;</span>
+        <span class="visually-hidden">(opens LinkedIn)</span>
       </Button>
-    </Card>
-  </section>
+      </Card>
+    </aside>
 
-  <section class="container posts" aria-labelledby="posts-title">
-    <div class="posts__head">
-      <h2 id="posts-title">Posts</h2>
-      <Button href={WRITING.feedPath} variant="secondary">Blog feed</Button>
-    </div>
-    <TagFilter tags={tags} />
-    {
-      posts.length > 0 ? (
-        <ul class="posts__list" data-reveal>
-          {posts.map((post) => (
-            <PostCard post={post} />
-          ))}
-        </ul>
-      ) : (
-        <Card tone="cream" as="div" class="posts__empty">
-          <p>No posts yet. Subscribe to the blog feed to get the first one.</p>
-        </Card>
-      )
-    }
-  </section>
+    <section class="posts" aria-labelledby="posts-title">
+      <div class="posts__head">
+        <h2 id="posts-title">Posts</h2>
+        <Button href={WRITING.feedPath} variant="secondary">Blog feed</Button>
+      </div>
+      <TagFilter tags={tags} />
+      {
+        posts.length > 0 ? (
+          <ul class="posts__list" data-reveal>
+            {posts.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </ul>
+        ) : (
+          <div class="posts__empty paper-sheet">
+            <p>No posts yet. Subscribe to the blog feed to get the first one.</p>
+          </div>
+        )
+      }
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
@@ -94,11 +96,42 @@ const tags = collectTags(posts);
     font-size: var(--text-lg);
   }
 
-  .container :global(.footnote) {
+  /* Posts are the main column; The Footnote is a sticky note beside them. */
+  .layout {
+    display: grid;
+    align-items: start;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 21rem;
+      gap: var(--space-7);
+    }
+
+    .footnote-slot {
+      grid-column: 2;
+      grid-row: 1;
+      position: sticky;
+      top: var(--space-6);
+    }
+  }
+
+  .layout :global(.footnote) {
     display: grid;
     justify-items: start;
     gap: var(--space-4);
-    padding: var(--space-6);
+    max-width: 30rem;
+    padding: var(--space-7) var(--space-5) var(--space-5);
+    rotate: 1.2deg;
+  }
+
+  .footnote__when {
+    color: var(--color-coral-ink);
+  }
+
+  .layout :global(.footnote) h2 {
+    font-size: var(--text-xl);
   }
 
   .footnote__issues {
@@ -119,13 +152,13 @@ const tags = collectTags(posts);
     justify-content: space-between;
     gap: var(--space-2);
     padding-block: var(--space-2);
-    border-bottom: var(--border-thin);
+    border-bottom: var(--border-width-thin) dashed var(--color-ink-soft);
   }
 
   .posts {
     display: grid;
     gap: var(--space-5);
-    padding-top: var(--space-8);
+    min-width: 0;
   }
 
   .posts__head {
@@ -136,10 +169,14 @@ const tags = collectTags(posts);
     gap: var(--space-4);
   }
 
+  .posts__head h2 {
+    font-size: var(--text-xl);
+  }
+
   .posts__list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-6);
-    padding: 0;
+    gap: var(--space-7) var(--space-6);
+    padding: var(--space-3) 0 0;
   }
 </style>

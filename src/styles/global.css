@@ -17,6 +17,11 @@ html {
   color-scheme: light;
 }
 
+/* Jump links land below the sticky header. */
+html {
+  scroll-padding-top: 4.5rem;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
@@ -162,6 +167,66 @@ samp {
 
 .paper-blueprint :is(h1, h2, h3, p) {
   color: inherit;
+}
+
+/* A single sheet of paper with a red margin line: long-form write-ups and logs.
+ * Content starts to the right of the margin line from 40rem up. */
+.paper-sheet {
+  position: relative;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-rest);
+}
+
+@media (min-width: 40rem) {
+  .paper-sheet {
+    padding: var(--space-7) var(--space-7) var(--space-8) calc(var(--space-7) + var(--space-5));
+  }
+
+  .paper-sheet::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 var(--space-6);
+    width: 2px;
+    background: var(--color-margin);
+  }
+}
+
+/* Mono label above a page or section heading. */
+.eyebrow {
+  color: var(--color-ink-soft);
+  max-width: none;
+}
+
+/* Folded-away detail: a native <details class="more"> with a mono summary.
+ * Keeps long write-ups off the page until asked for; works without JS. */
+.more > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  color: var(--color-blue);
+  cursor: pointer;
+  list-style: none;
+}
+
+.more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.more > summary::before {
+  content: '+';
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: var(--border-width-thin) solid currentColor;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.more[open] > summary::before {
+  content: '\2212';
 }
 
 /* Masking tape: add .tape to any positioned element. */

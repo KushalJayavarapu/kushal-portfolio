@@ -6,8 +6,9 @@ import Highlight from '../components/Highlight.astro';
 import Scribble from '../components/Scribble.astro';
 import Button from '../components/Button.astro';
 import Card from '../components/Card.astro';
-import EmailReveal from '../components/EmailReveal.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import ProjectEntry from '../components/ProjectEntry.astro';
+import AboutSection from '../components/sections/AboutSection.astro';
+import ContactSection from '../components/sections/ContactSection.astro';
 import IndexCard from '../components/IndexCard.astro';
 import TypingLine from '../components/TypingLine.astro';
 import StackMarquee from '../components/StackMarquee.astro';
@@ -15,12 +16,14 @@ import PostCard from '../components/writing/PostCard.astro';
 import { getProjects } from '../lib/projects';
 import { getPosts } from '../lib/blog';
 import { SITE, SOCIAL } from '../config/site';
+import { WRITING } from '../config/writing';
 
 // Every line of copy here traces to docs/content-brief.md.
 
-// Featured projects and latest writing come from the collections T3 and T4 fill.
-// Each section stays hidden until it has at least one published entry.
-const featured = (await getProjects()).filter(({ data }) => data.featured).slice(0, 4);
+// The whole site is this one page: hero, projects, about, writing, contact.
+// The header's links jump to the section ids below. Only blog posts (and the
+// post archive at /writing/) are separate pages.
+const projects = await getProjects();
 const posts = (await getPosts()).slice(0, 3);
 
 // Motion catalogue #4: the approved typing-line phrases (docs/content-brief.md).
@@ -69,7 +72,7 @@ const facts = [
 ---
 
 <BaseLayout>
-  <section class="container hero" aria-labelledby="hero-title">
+  <section id="top" class="container hero" aria-labelledby="hero-title">
     <div class="hero__copy">
       <p class="mono hero__eyebrow rise" style="--i: 0">CS student · PES University, Bengaluru</p>
       <h1 id="hero-title" class="rise" style="--i: 1">
@@ -83,8 +86,8 @@ const facts = [
       />
       <p class="hero__lede rise" style="--i: 3">{SITE.description}</p>
       <div class="actions rise" style="--i: 4">
-        <Button href="/projects/">See my projects <span class="arrow">&rarr;</span></Button>
-        <Button href="/contact/" variant="secondary">Get in touch</Button>
+        <Button href="#projects">See my projects <span class="arrow">&darr;</span></Button>
+        <Button href="#contact" variant="secondary">Get in touch</Button>
       </div>
     </div>
 
@@ -116,54 +119,44 @@ const facts = [
   <StackMarquee items={stack} label="Tools I work with" heading="On my desk" />
 
   {
-    featured.length > 0 && (
-      <section class="container section" aria-labelledby="projects-title">
+    projects.length > 0 && (
+      <section id="projects" class="container section" aria-labelledby="projects-title">
         <header class="section__head">
-          <p class="mono eyebrow">Selected work</p>
+          <p class="mono eyebrow">Projects · {projects.length} entries</p>
           <h2 id="projects-title">Things I've built</h2>
           <span class="start-here hand" aria-hidden="true">
             start here
             <Scribble shape="arrow-down" tone="blue" />
           </span>
         </header>
-        <ul class="grid" role="list" data-reveal>
-          {featured.map((project) => (
+        <nav class="jump" aria-label="Jump to a project">
+          <ol>
+            {projects.map((project, i) => (
+              <li>
+                <a href={`#${project.id}`}>
+                  <span class="mono" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {project.data.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+        <ol class="entries" role="list">
+          {projects.map((project, i) => (
             <li>
-              <ProjectCard project={project} />
+              <ProjectEntry project={project} number={i + 1} />
             </li>
           ))}
-        </ul>
-        <Button href="/projects/" variant="secondary">
-          All projects <span class="arrow">&rarr;</span>
-        </Button>
+        </ol>
       </section>
     )
   }
 
-  <section class="paper-ruled about" aria-labelledby="about-title">
-    <div class="container about__inner">
-      <header class="section__head">
-        <p class="mono eyebrow">About</p>
-        <h2 id="about-title">A bit about me</h2>
-      </header>
-      <div class="about__body">
-        <p>
-          I'm a Computer Science undergraduate at PES University in Bengaluru, building AI and data
-          products. I did summer research at PES University's Center for Cloud Computing and Big
-          Data, and I work on benchmarks for how LLM agents hold up when their environment changes.
-        </p>
-        <p>
-          Outside coursework I build hackathon projects, lead club operations, and write a weekly AI
-          explainer series.
-        </p>
-        <Button href="/about/" variant="secondary">
-          More about me <span class="arrow">&rarr;</span>
-        </Button>
-      </div>
-    </div>
-  </section>
+  <AboutSection />
 
-  <section class="container section" aria-labelledby="writing-title">
+  <section id="writing" class="container section" aria-labelledby="writing-title">
     <header class="section__head">
       <p class="mono eyebrow">Writing</p>
       <h2 id="writing-title">I explain AI in plain words</h2>
@@ -183,23 +176,21 @@ const facts = [
         </Card>
       </li>
     </ul>
+    {
+      posts.length > 0 && (
+        <div class="actions">
+          <Button href="/writing/" variant="secondary">
+            All posts <span class="arrow">&rarr;</span>
+          </Button>
+          <Button href={WRITING.feedPath} variant="secondary">
+            Blog feed
+          </Button>
+        </div>
+      )
+    }
   </section>
 
-  <section id="contact" class="paper-blueprint cta" aria-labelledby="contact-title">
-    <div class="container cta__inner">
-      <p class="mono cta__eyebrow">Contact</p>
-      <h2 id="contact-title">Let's talk.</h2>
-      <p>
-        I'm aiming for forward-deployed engineering roles, with a side interest in finance and data
-        analytics.
-      </p>
-      <div class="actions">
-        <EmailReveal variant="accent" />
-        <Button href={SOCIAL.linkedin} variant="inverse" rel="me">LinkedIn</Button>
-        <Button href={SOCIAL.github} variant="inverse" rel="me">GitHub</Button>
-      </div>
-    </div>
-  </section>
+  <ContactSection />
 </BaseLayout>
 
 <style>
@@ -329,6 +320,10 @@ const facts = [
     padding-block: var(--space-8);
   }
 
+  .section > * {
+    min-width: 0;
+  }
+
   .section__head {
     position: relative;
     display: grid;
@@ -388,50 +383,38 @@ const facts = [
     color: var(--color-coral-ink);
   }
 
-  /* ---- About teaser, on ruled paper ---- */
-  .about__inner {
+/* ---- Projects: a jump list, then one sheet per project ---- */
+  .jump ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .jump a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding-block: var(--space-2);
+    font-weight: var(--font-weight-strong);
+    text-decoration-color: var(--color-coral);
+  }
+
+  .jump .mono {
+    color: var(--color-coral-ink);
+  }
+
+  .entries {
     display: grid;
-    align-items: start;
-    gap: var(--space-6);
-    padding-block: var(--space-8);
+    gap: var(--space-8);
+    width: 100%;
+    padding: var(--space-3) 0 0;
+    list-style: none;
   }
 
-  @media (min-width: 60rem) {
-    .about__inner {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
-    }
-  }
-
-  .about__body {
-    display: grid;
-    justify-items: start;
-    gap: var(--space-5);
-  }
-
-  /* Text sits on the ruled lines. */
-  .about__body p {
-    font-size: var(--text-lg);
-    line-height: var(--paper-rule);
-    color: var(--color-ink);
-  }
-
-  /* ---- Contact, blueprint band ---- */
-  .cta__inner {
-    display: grid;
-    justify-items: start;
-    gap: var(--space-5);
-    padding-block: var(--space-9);
-  }
-
-  .cta h2 {
-    font-size: var(--text-display);
-  }
-
-  .cta__inner > p:not(.mono) {
-    font-size: var(--text-lg);
-  }
-
-  .cta__eyebrow {
-    color: var(--color-on-blueprint-soft);
+  .entries > li {
+    min-width: 0;
   }
 </style>
