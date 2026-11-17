@@ -12,17 +12,26 @@ interface Props {
   project: Project;
   tone?: 'surface' | 'cream' | 'yellow';
   headingLevel?: 'h2' | 'h3';
+  /** Entry number shown as a handwritten note in the corner, e.g. 1 -> "no. 01". */
+  number?: number;
   /** How many stack tags to show before collapsing the rest into "+N". */
   maxStack?: number;
 }
 
-const { project, tone = 'surface', headingLevel: Heading = 'h3', maxStack = 4 } = Astro.props;
+const { project, tone = 'surface', headingLevel: Heading = 'h3', number, maxStack = 4 } = Astro.props;
 const { title, summary, context, stack, result, status, cover, coverAlt } = project.data;
 const shown = stack.slice(0, maxStack);
 const hidden = stack.length - shown.length;
 ---
 
 <Card href={projectHref(project)} tone={tone} class="project-card">
+  {
+    number !== undefined && (
+      <span class="project-card__no hand" aria-hidden="true">
+        no. {String(number).padStart(2, '0')}
+      </span>
+    )
+  }
   {
     cover && (
       <Image
@@ -85,6 +94,14 @@ const hidden = stack.length - shown.length;
     --rest-tilt: -0.5deg;
   }
 
+  .project-card__no {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-4);
+    font-size: 1.35rem;
+    transform: rotate(4deg);
+  }
+
   .project-card__cover {
     width: 100%;
     height: auto;
@@ -94,6 +111,8 @@ const hidden = stack.length - shown.length;
   }
 
   .project-card__context {
+    /* Leaves the corner clear for the handwritten entry number. */
+    padding-right: 4.5rem;
     color: var(--color-ink-soft);
   }
 

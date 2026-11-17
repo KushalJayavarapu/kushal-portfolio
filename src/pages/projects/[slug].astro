@@ -3,7 +3,8 @@ import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/Button.astro';
-import Card from '../../components/Card.astro';
+import { Image } from 'astro:assets';
+import IndexCard from '../../components/IndexCard.astro';
 import Tag from '../../components/Tag.astro';
 import {
   getProjects,
@@ -28,11 +29,24 @@ interface Props {
 
 const { project, next } = Astro.props;
 const { Content } = await render(project);
-const { title, summary, context, period, team, role, status, result, stack, stackLabel, links, credits } =
-  project.data;
+const {
+  title,
+  summary,
+  context,
+  period,
+  team,
+  role,
+  status,
+  result,
+  stack,
+  stackLabel,
+  links,
+  credits,
+  cover,
+  coverAlt,
+} = project.data;
 
 const facts = [
-  { label: 'Context', value: context },
   { label: 'When', value: period },
   { label: 'Team', value: team },
   { label: 'My role', value: role },
@@ -50,6 +64,7 @@ const facts = [
   <article class="case">
     <header class="container case__header">
       <a class="case__back mono" href="/projects/">&larr; All projects</a>
+      {context && <p class="mono case__context">{context}</p>}
       <h1 transition:name={projectTitleTransition(project)}>{title}</h1>
       <p class="case__lede">{summary}</p>
       {
@@ -68,20 +83,7 @@ const facts = [
 
     <div class="container case__body">
       <aside class="case__aside" aria-label="Project facts">
-        {
-          facts.length > 0 && (
-            <Card as="div" tone="surface" class="case__facts">
-              <dl>
-                {facts.map((fact) => (
-                  <div>
-                    <dt class="mono">{fact.label}</dt>
-                    <dd>{fact.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Card>
-          )
-        }
+        {facts.length > 0 && <IndexCard title="Fact sheet" facts={facts} tilt="1.2deg" stacked />}
         {
           stack.length > 0 && (
             <section aria-labelledby="stack-title">
@@ -117,15 +119,30 @@ const facts = [
         }
       </aside>
 
-      <div class="prose">
-        <Content />
+      <div class="case__main">
+        {
+          cover && (
+            <figure class="case__cover tape">
+              <Image
+                src={cover}
+                alt={coverAlt ?? ''}
+                widths={[640, 1280]}
+                sizes="(min-width: 60rem) 42rem, 92vw"
+                loading="eager"
+              />
+            </figure>
+          )
+        }
+        <div class="prose page">
+          <Content />
+        </div>
       </div>
     </div>
 
     {
       next.id !== project.id && (
         <nav class="container case__next" aria-label="Next project">
-          <a class="case__next-link press" href={projectHref(next)}>
+          <a class="case__next-link press tape" href={projectHref(next)}>
             <span class="mono">Next project</span>
             <span class="case__next-title">{next.data.title} <span class="arrow">&rarr;</span></span>
           </a>
@@ -149,6 +166,10 @@ const facts = [
     min-height: 2.75rem;
   }
 
+  .case__context {
+    color: var(--color-ink-soft);
+  }
+
   .case__lede {
     font-size: var(--text-lg);
   }
@@ -163,12 +184,53 @@ const facts = [
     display: grid;
     gap: var(--space-7);
     padding-block: var(--space-6);
-    border-top: var(--border);
+  }
+
+  .case__main {
+    display: grid;
+    gap: var(--space-7);
+    min-width: 0;
+  }
+
+  /* Cover image: a print taped above the write-up. */
+  .case__cover {
+    position: relative;
+    padding: 10px;
+    background: var(--color-white);
+    box-shadow: var(--shadow-rest);
+    transform: rotate(-0.6deg);
+  }
+
+  .case__cover :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* The write-up sits on its own sheet with a red margin line. */
+  .page {
+    position: relative;
+    padding: var(--space-6) var(--space-5) var(--space-7);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-rest);
+  }
+
+  @media (min-width: 40rem) {
+    .page {
+      padding: var(--space-7) var(--space-7) var(--space-8) calc(var(--space-7) + var(--space-5));
+    }
+
+    .page::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 var(--space-6);
+      width: 2px;
+      background: var(--color-margin);
+    }
   }
 
   @media (min-width: 60rem) {
     .case__body {
-      grid-template-columns: minmax(0, 1fr) 18rem;
+      grid-template-columns: minmax(0, 1fr) 19rem;
       align-items: start;
     }
 
@@ -183,22 +245,6 @@ const facts = [
   .case__aside {
     display: grid;
     gap: var(--space-6);
-  }
-
-  .case__aside dl {
-    display: grid;
-    gap: var(--space-4);
-  }
-
-  .case__aside dt {
-    color: var(--color-ink-muted);
-  }
-
-  .case__aside dd {
-    margin: 0;
-    color: var(--color-ink);
-    font-weight: var(--font-weight-strong);
-    line-height: var(--leading-snug);
   }
 
   .case__aside-title {
@@ -240,10 +286,14 @@ const facts = [
     gap: var(--space-2);
     width: fit-content;
     max-width: 100%;
-    padding: var(--space-5) var(--space-6);
-    border: var(--border);
-    background: var(--color-yellow);
+    position: relative;
+    padding: var(--space-6) var(--space-6) var(--space-5);
+    background: var(--color-sticky);
     text-decoration: none;
+    --rest-tilt: -1deg;
+    --lift-x: 0px;
+    --lift: -5px;
+    --tilt: 0deg;
   }
 
   .case__next-title {
@@ -257,6 +307,9 @@ const facts = [
   .prose {
     display: grid;
     gap: var(--space-4);
+  }
+
+  .prose :global(> *) {
     max-width: var(--measure);
   }
 
